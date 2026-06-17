@@ -23,11 +23,11 @@
             width: 100%;
             height: 100%;
             transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
-            transform-style: preserve-3d; /* 뒷면이 보이게 하는 핵심 속성 복구 */
+            transform-style: preserve-3d;
         }
         .backface-hidden {
             backface-visibility: hidden;
-            -webkit-backface-visibility: hidden; /* Safari 지원 */
+            -webkit-backface-visibility: hidden;
         }
         .rotate-y-180 {
             transform: rotateY(180deg);
@@ -106,19 +106,46 @@
             </div>
 
             <div class="space-y-8">
-                <!-- 1. 고유어와 외래어 -->
+                <!-- 1. 우리말 어휘 분류 (고유어, 한자어, 외래어) -->
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
-                    <h3 class="text-2xl font-bold text-gray-800 mb-4 border-b pb-2"><i class="fa-solid fa-language text-blue-500 mr-2"></i>고유어와 외래어</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4 border-b pb-2"><i class="fa-solid fa-language text-blue-500 mr-2"></i>우리말 어휘 분류</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div class="bg-blue-50 rounded-xl p-5 border border-blue-100">
                             <h4 class="font-bold text-blue-800 mb-2 text-xl">고유어</h4>
                             <p class="text-gray-700 text-base mb-3">본디부터 <strong>우리말에 있었거나</strong> 그것을 바탕으로 <strong>새로 만들어진</strong> 단어.</p>
                             <p class="text-base text-gray-500"><span class="font-semibold text-blue-600">예시:</span> 하늘, 바다, 고뿔, 시나브로</p>
                         </div>
+                        <div class="bg-amber-50 rounded-xl p-5 border border-amber-100">
+                            <h4 class="font-bold text-amber-800 mb-2 text-xl">한자어</h4>
+                            <p class="text-gray-700 text-base mb-3">한자를 바탕으로 만들어져 <strong>우리말 어휘의 큰 비중</strong>을 차지하는 단어.</p>
+                            <p class="text-base text-gray-500"><span class="font-semibold text-amber-600">예시:</span> 학교, 우주, 부모, 학생</p>
+                        </div>
                         <div class="bg-indigo-50 rounded-xl p-5 border border-indigo-100">
                             <h4 class="font-bold text-indigo-800 mb-2 text-xl">외래어</h4>
                             <p class="text-gray-700 text-base mb-3"><strong>외국에서 들어온 말</strong>이지만 <strong>우리말처럼</strong> 널리 쓰이는 단어.</p>
                             <p class="text-base text-gray-500"><span class="font-semibold text-indigo-600">예시:</span> 버스, 컴퓨터, 피자, 아이스크림</p>
+                        </div>
+                    </div>
+
+                    <!-- 외래어 vs 외국어 비교 박스 추가 (가로 1단) -->
+                    <div class="mt-6 bg-slate-50 border border-slate-200 rounded-xl p-6 flex flex-col md:flex-row gap-5 items-start">
+                        <div class="flex-shrink-0 text-indigo-500 mt-1">
+                            <i class="fa-solid fa-circle-info text-3xl"></i>
+                        </div>
+                        <div class="w-full">
+                            <h4 class="font-bold text-gray-800 text-xl mb-3">알아두기: 외래어와 외국어의 차이점</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-base text-gray-700">
+                                <div class="bg-white p-5 rounded-lg border border-indigo-100 shadow-sm">
+                                    <span class="font-bold text-indigo-600 block mb-2 text-lg"><i class="fa-solid fa-check text-green-500 mr-1"></i>외래어 (우리말 ○)</span>
+                                    외국에서 들어왔지만 <strong>우리말로 인정</strong>되어 쓰이는 단어입니다. 마땅히 대체할 우리말이 없는 경우가 많습니다.<br>
+                                    <p class="text-sm text-gray-600 mt-3 bg-indigo-50 p-2 rounded"><span class="font-semibold">예:</span> 피자, 컴퓨터, 버스</p>
+                                </div>
+                                <div class="bg-white p-5 rounded-lg border border-red-100 shadow-sm">
+                                    <span class="font-bold text-red-500 block mb-2 text-lg"><i class="fa-solid fa-xmark text-red-500 mr-1"></i>외국어 (우리말 ×)</span>
+                                    다른 나라의 말로, <strong>우리말로 인정되지 않는</strong> 단어입니다. 대체할 수 있는 고유어나 한자어가 존재합니다.<br>
+                                    <p class="text-sm text-gray-600 mt-3 bg-red-50 p-2 rounded"><span class="font-semibold">예:</span> 밀크 ➔ 우유, 땡큐 ➔ 고맙습니다</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
