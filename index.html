@@ -7,21 +7,13 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght=300;400;500;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght=300;400;500;700;900&display=swap');
         
-        body {
-            font-family: 'Noto Sans KR', sans-serif;
-            background-color: #f8fafc;
-        }
+        body { font-family: 'Noto Sans KR', sans-serif; background-color: #f8fafc; }
 
-        /* Flashcard 3D Flip Effects */
-        .perspective-1000 {
-            perspective: 1000px;
-        }
+        .perspective-1000 { perspective: 1000px; }
         .flip-card-inner {
-            position: relative;
-            width: 100%;
-            height: 100%;
+            position: relative; width: 100%; height: 100%;
             transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
             transform-style: preserve-3d;
         }
@@ -29,830 +21,887 @@
             backface-visibility: hidden;
             -webkit-backface-visibility: hidden;
         }
-        .rotate-y-180 {
-            transform: rotateY(180deg);
-        }
-        .flip-card.flipped .flip-card-inner {
-            transform: rotateY(180deg);
-        }
+        .rotate-y-180 { transform: rotateY(180deg); }
+        .flip-card.flipped .flip-card-inner { transform: rotateY(180deg); }
 
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1; 
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #cbd5e1; 
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8; 
-        }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
         .tab-active {
-            background-color: #2563eb;
-            color: #ffffff;
-            box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.4);
+            background-color: #4f46e5; color: #ffffff;
+            box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.4);
             transform: translateY(-2px);
+        }
+
+        #gameCanvas {
+            background-color: #1e293b;
+            width: 100%; 
+            display: block;
+        }
+
+        .game-container {
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+            border: 4px solid #475569;
+            border-bottom: 8px solid #ef4444; 
+            border-radius: 8px;
+            overflow: hidden;
         }
     </style>
 </head>
 <body class="text-gray-800 text-lg">
 
-    <!-- Header -->
-    <header class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white shadow-lg sticky top-0 z-50">
-        <div class="container mx-auto px-4 py-5 flex flex-col md:flex-row justify-between items-center">
-            <h1 class="text-3xl font-bold tracking-tight flex items-center">
-                <i class="fa-solid fa-graduation-cap mr-3 text-yellow-300"></i>1-2-2 (2) 어휘의 양상과 쓰임
-            </h1>
-            <p class="text-blue-100 mt-2 md:mt-0 text-lg font-medium bg-blue-800 bg-opacity-40 px-4 py-1.5 rounded-full">
-                중학 국어 문법 디지털 배움터
-            </p>
-        </div>
-        
-        <!-- Navigation Tab Buttons -->
-        <nav class="bg-white text-gray-700 shadow-inner border-t border-gray-100 py-3">
-            <div class="container mx-auto px-4 flex justify-start md:justify-center space-x-3 overflow-x-auto">
-                <button onclick="switchTab('concept')" id="tab-concept" class="tab-btn tab-active px-6 py-3 rounded-xl font-bold text-base md:text-lg transition-all duration-200 whitespace-nowrap flex items-center">
-                    <i class="fa-solid fa-spell-check mr-2"></i>기본 개념
-                </button>
-                <button onclick="switchTab('aspects')" id="tab-aspects" class="tab-btn px-6 py-3 rounded-xl font-bold text-base md:text-lg transition-all duration-200 whitespace-nowrap flex items-center hover:bg-gray-100">
-                    <i class="fa-solid fa-chart-pie mr-2 text-purple-500"></i>어휘의 양상
-                </button>
-                <button onclick="switchTab('flashcards')" id="tab-flashcards" class="tab-btn px-6 py-3 rounded-xl font-bold text-base md:text-lg transition-all duration-200 whitespace-nowrap flex items-center hover:bg-gray-100">
-                    <i class="fa-solid fa-clone mr-2 text-yellow-500"></i>어휘 정리
-                </button>
-                <button onclick="switchTab('quiz')" id="tab-quiz" class="tab-btn px-6 py-3 rounded-xl font-bold text-base md:text-lg transition-all duration-200 whitespace-nowrap flex items-center hover:bg-gray-100">
-                    <i class="fa-solid fa-file-signature mr-2 text-emerald-500"></i>형성 평가
-                </button>
-            </div>
+    <header class="bg-white shadow-sm border-b border-gray-100 sticky top-0 z-50">
+        <nav class="container mx-auto px-4 py-3 flex justify-between items-center gap-4 overflow-x-auto">
+            <button onclick="switchTab('concept')" id="tab-concept" class="tab-btn tab-active px-6 py-3 rounded-xl font-bold text-lg transition-all duration-200 flex items-center gap-2 whitespace-nowrap hover:bg-gray-100">
+                <i class="fa-solid fa-spell-check text-indigo-300"></i>기본 개념
+            </button>
+            <button onclick="switchTab('aspects')" id="tab-aspects" class="tab-btn px-6 py-3 rounded-xl font-bold text-lg transition-all duration-200 flex items-center gap-2 whitespace-nowrap hover:bg-gray-100">
+                <i class="fa-solid fa-chart-pie text-purple-500"></i>어휘의 양상
+            </button>
+            <button onclick="switchTab('flashcards')" id="tab-flashcards" class="tab-btn px-6 py-3 rounded-xl font-bold text-lg transition-all duration-200 flex items-center gap-2 whitespace-nowrap hover:bg-gray-100">
+                <i class="fa-solid fa-clone text-yellow-500"></i>어휘 정리
+            </button>
+            <button onclick="switchTab('game')" id="tab-game" class="tab-btn px-6 py-3 rounded-xl font-bold text-lg transition-all duration-200 flex items-center gap-2 whitespace-nowrap bg-indigo-50 text-indigo-700 border border-indigo-100 hover:bg-indigo-100">
+                <i class="fa-solid fa-gamepad text-indigo-500"></i>어휘 벽돌 깨기
+            </button>
+            <button onclick="switchTab('quiz')" id="tab-quiz" class="tab-btn px-6 py-3 rounded-xl font-bold text-lg transition-all duration-200 flex items-center gap-2 whitespace-nowrap hover:bg-gray-100">
+                <i class="fa-solid fa-file-signature text-emerald-500"></i>형성 평가
+            </button>
         </nav>
     </header>
 
-    <!-- Main Content -->
     <main class="container mx-auto px-4 py-8 max-w-5xl">
 
-        <!-- 1. 어휘의 뜻 Section -->
-        <section id="sec-concept" class="content-section animate-fade-in">
-            <!-- 어휘의 뜻 메인 박스 -->
-            <div class="bg-white rounded-2xl shadow-md border-2 border-blue-500 p-8 mb-10 max-w-3xl mx-auto text-center">
-                <h2 class="text-4xl font-bold text-gray-800 mb-4 border-b-2 border-blue-200 pb-4 inline-block">어휘의 <span class="text-blue-600">기본 개념</span></h2>
-                <p class="text-gray-700 leading-relaxed text-xl">
-                    <strong>일정한 기준에 따라 한데 묶은 <span class="text-blue-700">단어들의 무리</span>.</strong><br>
-                    <span class="text-base text-gray-500 font-normal mt-2 block"><strong>특성과 유래, 사용 범위</strong> 등에 따라 짝을 이루는 여러 개념으로 <strong>분류 가능</strong>.</span>
-                </p>
+        <!-- 1. 기본 개념 Section -->
+        <section id="sec-concept" class="content-section animate-fade-in space-y-6">
+            
+            <!-- 어휘 박스 -->
+            <div class="bg-white rounded-2xl border border-blue-500 shadow-sm p-6 mb-6 flex items-center gap-8">
+                <div class="w-1/4 text-center shrink-0">
+                    <h2 class="text-5xl font-bold text-blue-600 tracking-tight">어휘</h2>
+                </div>
+                <div class="w-px h-16 bg-blue-200 shrink-0"></div>
+                <div class="w-3/4">
+                    <p class="text-xl font-bold text-gray-800 mb-2">일정한 기준에 따라 한데 묶은 <span class="text-blue-700 font-bold">단어들의 무리</span>.</p>
+                    <p class="text-gray-500 text-base">특성과 유래, 사용 범위 등에 따라 짝을 이루는 여러 개념으로 분류 가능.</p>
+                </div>
             </div>
 
-            <div class="space-y-8">
-                <!-- 1. 우리말 어휘 분류 (고유어, 한자어, 외래어) -->
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
-                    <h3 class="text-2xl font-bold text-gray-800 mb-4 border-b pb-2"><i class="fa-solid fa-language text-blue-500 mr-2"></i>우리말 어휘 분류</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div class="bg-blue-50 rounded-xl p-5 border border-blue-100">
-                            <h4 class="font-bold text-blue-800 mb-2 text-xl">고유어</h4>
-                            <p class="text-gray-700 text-base mb-3">본디부터 <strong>우리말에 있었거나</strong> 그것을 바탕으로 <strong>새로 만들어진</strong> 단어.</p>
-                            <p class="text-base text-gray-500"><span class="font-semibold text-blue-600">예시:</span> 하늘, 바다, 고뿔, 시나브로</p>
-                        </div>
-                        <div class="bg-amber-50 rounded-xl p-5 border border-amber-100">
-                            <h4 class="font-bold text-amber-800 mb-2 text-xl">한자어</h4>
-                            <p class="text-gray-700 text-base mb-3">한자를 바탕으로 만들어져 <strong>우리말 어휘의 큰 비중</strong>을 차지하는 단어.</p>
-                            <p class="text-base text-gray-500"><span class="font-semibold text-amber-600">예시:</span> 학교, 우주, 부모, 학생</p>
-                        </div>
-                        <div class="bg-indigo-50 rounded-xl p-5 border border-indigo-100">
-                            <h4 class="font-bold text-indigo-800 mb-2 text-xl">외래어</h4>
-                            <p class="text-gray-700 text-base mb-3"><strong>외국에서 들어온 말</strong>이지만 <strong>우리말처럼</strong> 널리 쓰이는 단어.</p>
-                            <p class="text-base text-gray-500"><span class="font-semibold text-indigo-600">예시:</span> 버스, 컴퓨터, 피자, 아이스크림</p>
-                        </div>
+            <!-- 우리말 어휘 분류 -->
+            <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden mb-6">
+                <div class="px-6 py-4 border-b border-gray-100 flex items-center gap-2">
+                    <div class="bg-indigo-100 text-indigo-600 rounded flex items-center justify-center w-8 h-6 font-bold text-sm">A<span class="text-xs ml-1">文</span></div>
+                    <h3 class="text-xl font-bold text-gray-800">우리말 어휘 분류</h3>
+                </div>
+                <div class="p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-blue-50/40 p-5 rounded-xl border border-blue-50">
+                        <h4 class="text-xl font-bold text-blue-900 mb-3">고유어</h4>
+                        <p class="text-gray-700 mb-4 text-base leading-relaxed">본디부터 <strong class="text-gray-900">우리말에 있었거나</strong> 그것을 바탕으로 <strong class="text-gray-900">새로 만들어진</strong> 단어.</p>
+                        <p class="text-sm text-gray-600"><strong class="text-blue-700">예시:</strong> 하늘, 바다, 고뿔</p>
                     </div>
-
-                    <!-- 외래어 vs 외국어 비교 박스 (가로 1단) -->
-                    <div class="mt-6 bg-slate-50 border border-slate-200 rounded-xl p-6 flex flex-col md:flex-row gap-5 items-start">
-                        <div class="flex-shrink-0 text-indigo-500 mt-1">
-                            <i class="fa-solid fa-circle-info text-3xl"></i>
-                        </div>
-                        <div class="w-full">
-                            <h4 class="font-bold text-gray-800 text-xl mb-3">알아두기: 외래어와 외국어의 차이점</h4>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-base text-gray-700">
-                                <div class="bg-white p-5 rounded-lg border border-indigo-100 shadow-sm">
-                                    <span class="font-bold text-indigo-600 block mb-2 text-lg"><i class="fa-solid fa-check text-green-500 mr-1"></i>외래어 (우리말 ○)</span>
-                                    외국에서 들어왔지만 <strong>우리말로 인정</strong>되어 쓰이는 단어입니다. 대체할 우리말이 마땅히 없어 국어처럼 쓰입니다.<br>
-                                    <p class="text-sm text-gray-600 mt-3 bg-indigo-50 p-2 rounded"><span class="font-semibold">예:</span> 피자, 컴퓨터, 버스, 카메라</p>
-                                </div>
-                                <div class="bg-white p-5 rounded-lg border border-red-100 shadow-sm">
-                                    <span class="font-bold text-red-500 block mb-2 text-lg"><i class="fa-solid fa-xmark text-red-500 mr-1"></i>외국어 (우리말 ×)</span>
-                                    다른 나라의 말로, <strong>우리말로 인정되지 않는</strong> 단어입니다. 고유어나 한자어로 순화하여 표현할 수 있습니다.<br>
-                                    <p class="text-sm text-gray-600 mt-3 bg-red-50 p-2 rounded"><span class="font-semibold">예:</span> 밀크 ➔ 우유, 땡큐 ➔ 고맙습니다</p>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="bg-amber-50/40 p-5 rounded-xl border border-amber-50">
+                        <h4 class="text-xl font-bold text-amber-900 mb-3">한자어</h4>
+                        <p class="text-gray-700 mb-4 text-base leading-relaxed">한자를 바탕으로 만들어져 <strong class="text-gray-900">우리말 어휘의 큰 비중</strong>을 차지하는 단어.</p>
+                        <p class="text-sm text-gray-600"><strong class="text-amber-700">예시:</strong> 학교, 우주, 부모</p>
+                    </div>
+                    <div class="bg-indigo-50/40 p-5 rounded-xl border border-indigo-50">
+                        <h4 class="text-xl font-bold text-indigo-900 mb-3">외래어</h4>
+                        <p class="text-gray-700 mb-4 text-base leading-relaxed">외국에서 들어온 말이지만 <strong class="text-gray-900">우리말처럼 널리 쓰이는</strong> 단어.</p>
+                        <p class="text-sm text-gray-600"><strong class="text-indigo-700">예시:</strong> 버스, 컴퓨터, 피자</p>
                     </div>
                 </div>
+            </div>
 
-                <!-- 2. 사어와 신조어 -->
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
-                    <h3 class="text-2xl font-bold text-gray-800 mb-4 border-b pb-2"><i class="fa-solid fa-clock-rotate-left text-green-500 mr-2"></i>사어와 신조어</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="bg-gray-50 rounded-xl p-5 border border-gray-200">
-                            <h4 class="font-bold text-gray-800 mb-2 text-xl">사어 (죽은말)</h4>
-                            <p class="text-gray-700 text-base mb-3">과거에는 쓰였으나 <strong>시대가 변하면서</strong> 지금은 <strong>더 이상 쓰이지 않게 된</strong> 단어.</p>
-                            <p class="text-base text-gray-500"><span class="font-semibold text-gray-600">예시:</span> 뫼(산), 가람(강), 즈믄(천)</p>
-                        </div>
-                        <div class="bg-green-50 rounded-xl p-5 border border-green-100">
-                            <h4 class="font-bold text-green-800 mb-2 text-xl">신조어 (새말)</h4>
-                            <p class="text-gray-700 text-base mb-3"><strong>새로운 사물이나 개념</strong>이 생겨나면서 이를 표현하기 위해 <strong>새로 만들어진</strong> 단어.</p>
-                            <p class="text-base text-gray-500"><span class="font-semibold text-green-600">예시:</span> 누리꾼, 인공지능, 메타버스</p>
-                        </div>
+            <!-- 알아두기: 외래어와 외국어 -->
+            <div class="bg-gray-50 rounded-2xl border border-gray-200 shadow-sm overflow-hidden mb-6">
+                <div class="p-6">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-8 h-8 rounded-full bg-indigo-500 text-white flex items-center justify-center font-bold">i</div>
+                        <h3 class="text-xl font-bold text-gray-800">알아두기: 외래어와 외국어의 차이점</h3>
                     </div>
-                </div>
-
-                <!-- 3. 의미 변화 -->
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
-                    <h3 class="text-2xl font-bold text-gray-800 mb-4 border-b pb-2"><i class="fa-solid fa-arrows-left-right text-teal-500 mr-2"></i>의미 변화</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div class="bg-teal-50 rounded-xl p-5 border border-teal-100">
-                            <h4 class="font-bold text-teal-800 mb-2 text-xl">의미 확장</h4>
-                            <p class="text-gray-700 text-base mb-3">단어가 본래 가지고 있던 <strong>의미의 범위가 더 넓어지는</strong> 현상.</p>
-                            <p class="text-base text-gray-500"><span class="font-semibold text-teal-600">예시:</span> 다리 (신체 부위 ➔ 무생물의 받침), 손 (신체 부위 ➔ 노동력)</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-white p-5 rounded-xl border border-gray-100 shadow-sm">
+                            <h4 class="text-lg font-bold text-indigo-600 mb-2 flex items-center"><i class="fa-solid fa-check text-green-500 mr-2"></i>외래어 (우리말 ◯)</h4>
+                            <p class="text-gray-600 text-base">외국에서 들어왔지만 <strong class="text-gray-800">우리말로 인정</strong>되어 쓰이는 단어입니다. (예: 피자, 컴퓨터)</p>
                         </div>
-                        <div class="bg-cyan-50 rounded-xl p-5 border border-cyan-100">
-                            <h4 class="font-bold text-cyan-800 mb-2 text-xl">의미 축소</h4>
-                            <p class="text-gray-700 text-base mb-3">단어가 본래 가지고 있던 <strong>의미의 범위가 더 좁아지는</strong> 현상.</p>
-                            <p class="text-base text-gray-500"><span class="font-semibold text-cyan-600">예시:</span> 미인 (남녀 모두 ➔ 여자), 짐승 (모든 생물 ➔ 인간을 제외한 동물)</p>
-                        </div>
-                        <div class="bg-indigo-50 rounded-xl p-5 border border-indigo-100">
-                            <h4 class="font-bold text-indigo-800 mb-2 text-xl">의미 이동</h4>
-                            <p class="text-gray-700 text-base mb-3">단어의 의미가 <strong>본래의 뜻과 전혀 다르게 바뀌는</strong> 현상.</p>
-                            <p class="text-base text-gray-500"><span class="font-semibold text-indigo-600">예시:</span> 어리다 (어리석다 ➔ 나이가 적다), 인정 (뇌물 ➔ 따뜻한 마음)</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 4. 방언과 표준어 -->
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
-                    <h3 class="text-2xl font-bold text-gray-800 mb-4 border-b pb-2"><i class="fa-solid fa-map-location-dot text-orange-500 mr-2"></i>방언과 표준어</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="bg-orange-50 rounded-xl p-5 border border-orange-100">
-                            <h4 class="font-bold text-orange-800 mb-2 text-xl">방언 (사투리)</h4>
-                            <p class="text-gray-700 text-base mb-3"><strong>특정 지역이나 사회 계층</strong>에서 주로 쓰여 그 지역/계층의 <strong>특성을 나타내는</strong> 단어.</p>
-                            <p class="text-base text-gray-500"><span class="font-semibold text-orange-600">예시:</span> 정구지(부추), 머스마(사내아이)</p>
-                        </div>
-                        <div class="bg-red-50 rounded-xl p-5 border border-red-100">
-                            <h4 class="font-bold text-red-800 mb-2 text-xl">표준어</h4>
-                            <p class="text-gray-700 text-base mb-3"><strong>원활한 의사소통</strong>을 위해 한 나라에서 <strong>공통어로 쓰도록 규범으로 정한</strong> 언어.<br><strong class="text-red-700">(우리말 표준어 규정: 교양 있는 사람들이 두루 쓰는 현대 서울말)</strong></p>
-                            <p class="text-base text-gray-500"><span class="font-semibold text-red-600">예시:</span> 부추, 사내아이</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 5. 금기어와 완곡어, 유행어, 은어 -->
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
-                    <h3 class="text-2xl font-bold text-gray-800 mb-4 border-b pb-2"><i class="fa-solid fa-masks-theater text-pink-500 mr-2"></i>금기어와 완곡어, 유행어, 은어</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div class="bg-pink-50 rounded-xl p-5 border border-pink-100">
-                            <h4 class="font-bold text-pink-800 mb-2 text-xl">금기어와 완곡어</h4>
-                            <p class="text-gray-700 text-base mb-3">불쾌하거나 두려운 것을 가리키는 <strong>금기어</strong>를 피하고, 부드럽고 덜 직접적인 <strong>완곡어</strong>로 돌려 말하는 현상.</p>
-                            <p class="text-base text-gray-500"><span class="font-semibold text-pink-600">예시:</span> 죽다 ➔ 돌아가시다, 천연두 ➔ 손님</p>
-                        </div>
-                        <div class="bg-rose-50 rounded-xl p-5 border border-rose-100">
-                            <h4 class="font-bold text-rose-800 mb-2 text-xl">유행어</h4>
-                            <p class="text-gray-700 text-base mb-3">비교적 짧은 시기에 여러 사람의 입에 오르내리며 <strong>널리 쓰이는</strong> 단어.</p>
-                            <p class="text-base text-gray-500"><span class="font-semibold text-rose-600">예시:</span> 대박, 헐, 폼 미쳤다</p>
-                        </div>
-                        <div class="bg-fuchsia-50 rounded-xl p-5 border border-fuchsia-100">
-                            <h4 class="font-bold text-fuchsia-800 mb-2 text-xl">은어</h4>
-                            <p class="text-gray-700 text-base mb-3">어떤 계층이나 부류의 사람들이 <strong>자기네끼리만 비밀을 유지</strong>하기 위해 사용하는 단어.</p>
-                            <p class="text-base text-gray-500"><span class="font-semibold text-fuchsia-600">예시:</span> 짭새(경찰), 돋대(안경 - 심마니 은어)</p>
+                        <div class="bg-white p-5 rounded-xl border border-red-50 shadow-sm">
+                            <h4 class="text-lg font-bold text-red-500 mb-2 flex items-center"><i class="fa-solid fa-xmark mr-2"></i>외국어 (우리말 ✕)</h4>
+                            <p class="text-gray-600 text-base">다른 나라의 말로, <strong class="text-gray-800">우리말로 인정되지 않는</strong> 단어입니다. (예: 밀크 ➔ 우유)</p>
                         </div>
                     </div>
                 </div>
             </div>
+
+            <!-- 사어와 신조어 -->
+            <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden mb-6">
+                <div class="px-6 py-4 border-b border-gray-100 flex items-center gap-2">
+                    <i class="fa-solid fa-clock-rotate-left text-green-500 text-xl mr-1"></i>
+                    <h3 class="text-xl font-bold text-gray-800">사어와 신조어</h3>
+                </div>
+                <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-gray-50 p-5 rounded-xl border border-gray-100">
+                        <h4 class="text-lg font-bold text-gray-800 mb-3">사어 (죽은말)</h4>
+                        <p class="text-gray-700 text-base mb-4 leading-relaxed">과거에는 쓰였으나 시대가 변하면서 <strong class="text-gray-900">지금은 더 이상 쓰이지 않게 된</strong> 단어.</p>
+                        <p class="text-sm text-gray-600"><strong class="text-gray-700">예시:</strong> 뫼(산), 가람(강), 즈믄(천)</p>
+                    </div>
+                    <div class="bg-green-50/30 p-5 rounded-xl border border-green-50">
+                        <h4 class="text-lg font-bold text-green-800 mb-3">신조어 (새말)</h4>
+                        <p class="text-gray-700 text-base mb-4 leading-relaxed">새로운 사물이나 개념이 생겨나면서 이를 표현하기 위해 <strong class="text-gray-900">새로 만들어진</strong> 단어.</p>
+                        <p class="text-sm text-gray-600"><strong class="text-green-700">예시:</strong> 누리꾼, 인공지능, 메타버스</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 의미 변화 -->
+            <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden mb-6">
+                <div class="px-6 py-4 border-b border-gray-100 flex items-center gap-2">
+                    <i class="fa-solid fa-left-right text-teal-500 text-xl mr-1"></i>
+                    <h3 class="text-xl font-bold text-gray-800">의미 변화</h3>
+                </div>
+                <div class="p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-teal-50/30 p-5 rounded-xl border border-teal-50">
+                        <h4 class="text-lg font-bold text-teal-800 mb-3">의미 확장</h4>
+                        <p class="text-gray-700 text-base mb-4 leading-relaxed">단어가 본래 가지고 있던 <strong class="text-gray-900">의미의 범위가 더 넓어지는</strong> 현상.</p>
+                        <p class="text-sm text-gray-600"><strong class="text-teal-700">예시:</strong> 다리 (신체 부위 ➔ 무생물의 받침)</p>
+                    </div>
+                    <div class="bg-cyan-50/30 p-5 rounded-xl border border-cyan-50">
+                        <h4 class="text-lg font-bold text-cyan-800 mb-3">의미 축소</h4>
+                        <p class="text-gray-700 text-base mb-4 leading-relaxed">단어가 본래 가지고 있던 <strong class="text-gray-900">의미의 범위가 더 좁아지는</strong> 현상.</p>
+                        <p class="text-sm text-gray-600"><strong class="text-cyan-700">예시:</strong> 미인 (남녀 모두 ➔ 여자)</p>
+                    </div>
+                    <div class="bg-indigo-50/30 p-5 rounded-xl border border-indigo-50">
+                        <h4 class="text-lg font-bold text-indigo-800 mb-3">의미 이동</h4>
+                        <p class="text-gray-700 text-base mb-4 leading-relaxed">단어의 의미가 <strong class="text-gray-900">본래의 뜻과 전혀 다르게 바뀌는</strong> 현상.</p>
+                        <p class="text-sm text-gray-600"><strong class="text-indigo-700">예시:</strong> 어리다 (어리석다 ➔ 나이가 적다)</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 방언과 표준어 -->
+            <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden mb-6">
+                <div class="px-6 py-4 border-b border-gray-100 flex items-center gap-2">
+                    <i class="fa-solid fa-map-location-dot text-orange-500 text-xl mr-1"></i>
+                    <h3 class="text-xl font-bold text-gray-800">방언과 표준어</h3>
+                </div>
+                <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-orange-50/50 p-5 rounded-xl border border-orange-50">
+                        <h4 class="text-lg font-bold text-orange-900 mb-3">방언 (사투리)</h4>
+                        <p class="text-gray-700 text-base mb-4 leading-relaxed">특정 지역이나 사회 계층에서 주로 쓰여 그 지역/계층의 <strong class="text-gray-900">특성을 나타내는</strong> 단어.</p>
+                        <p class="text-sm text-gray-600"><strong class="text-orange-700">예시:</strong> 정구지(부추), 머스마(사내아이)</p>
+                    </div>
+                    <div class="bg-red-50/30 p-5 rounded-xl border border-red-50">
+                        <h4 class="text-lg font-bold text-red-900 mb-3">표준어</h4>
+                        <p class="text-gray-700 text-base mb-4 leading-relaxed">원활한 의사소통을 위해 한 나라에서 공통어로 쓰도록 <strong class="text-gray-900">규범으로 정한</strong> 언어.</p>
+                        <p class="text-sm text-gray-600"><strong class="text-red-700">예시:</strong> 부추, 사내아이</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 금기어와 완곡어, 유행어, 은어 -->
+            <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden mb-6">
+                <div class="px-6 py-4 border-b border-gray-100 flex items-center gap-2">
+                    <i class="fa-solid fa-masks-theater text-pink-500 text-xl mr-1"></i>
+                    <h3 class="text-xl font-bold text-gray-800">금기어와 완곡어, 유행어, 은어</h3>
+                </div>
+                <div class="p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-pink-50/50 p-5 rounded-xl border border-pink-50">
+                        <h4 class="text-lg font-bold text-pink-900 mb-3">금기어와 완곡어</h4>
+                        <p class="text-gray-700 text-base mb-4 leading-relaxed">불쾌하거나 두려운 것을 가리키는 <strong class="text-gray-900">금기어</strong>를 피하고, 부드럽고 덜 직접적인 <strong class="text-gray-900">완곡어</strong>로 돌려 말하는 현상.</p>
+                        <p class="text-sm text-gray-600"><strong class="text-pink-700">예시:</strong> 죽다 ➔ 돌아가시다</p>
+                    </div>
+                    <div class="bg-rose-50/30 p-5 rounded-xl border border-rose-50">
+                        <h4 class="text-lg font-bold text-rose-900 mb-3">유행어</h4>
+                        <p class="text-gray-700 text-base mb-4 leading-relaxed">비교적 짧은 시기에 여러 사람의 입에 오르내리며 <strong class="text-gray-900">널리 쓰이는</strong> 단어.</p>
+                        <p class="text-sm text-gray-600"><strong class="text-rose-700">예시:</strong> 대박, 헐, 폼 미쳤다</p>
+                    </div>
+                    <div class="bg-purple-50/30 p-5 rounded-xl border border-purple-50">
+                        <h4 class="text-lg font-bold text-purple-900 mb-3">은어</h4>
+                        <p class="text-gray-700 text-base mb-4 leading-relaxed">어떤 계층이나 부류의 사람들이 <strong class="text-gray-900">자기네끼리만 비밀을 유지하기 위해</strong> 사용하는 단어.</p>
+                        <p class="text-sm text-gray-600"><strong class="text-purple-700">예시:</strong> 짭새(경찰), 돋대(안경)</p>
+                    </div>
+                </div>
+            </div>
+
         </section>
 
         <!-- 2. 어휘의 양상 Section -->
-        <section id="sec-aspects" class="content-section hidden animate-fade-in">
-            <div class="flex flex-col items-center text-center mb-10 max-w-2xl mx-auto border-2 border-purple-400 bg-white rounded-2xl p-6">
-                <h2 class="text-4xl font-bold text-gray-800 mb-3"><span class="text-purple-600">어휘의 양상</span>이란?</h2>
-                <p class="text-gray-700 leading-relaxed text-xl">
-                    어휘는 고정되어 있지 않고, 그것을 사용하는 <strong>세대, 분야, 매체</strong>에 따라 다양하게 다르고 다채롭게 변이되어 나타납니다.
-                </p>
+        <section id="sec-aspects" class="content-section hidden animate-fade-in space-y-6">
+            
+            <!-- 어휘의 양상 메인 -->
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-purple-200 flex flex-col lg:flex-row items-center gap-8 mb-6">
+                <div class="lg:w-1/4 text-center shrink-0">
+                    <h2 class="text-4xl font-bold text-purple-600 tracking-tight whitespace-nowrap">어휘의 양상</h2>
+                </div>
+                <div class="hidden lg:block w-px h-12 bg-purple-200 shrink-0"></div>
+                <div class="lg:w-3/4">
+                    <p class="text-lg text-gray-700 leading-relaxed">
+                        어휘는 고정되어 있지 않고, 그것을 사용하는 <strong class="text-gray-900">세대, 분야, 매체</strong>에 따라 다양하게 다르고 다채롭게 변이되어 <strong class="text-gray-900">나타남</strong>.
+                    </p>
+                </div>
             </div>
 
-            <div class="space-y-8">
-                <!-- 세대에 따른 어휘 -->
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
-                    <h3 class="text-2xl font-bold text-gray-800 mb-2 border-b pb-2"><i class="fa-solid fa-people-arrows text-purple-500 mr-2"></i>세대에 따른 어휘</h3>
-                    <p class="text-gray-700 text-base mb-6 bg-gray-50 p-4 rounded-lg border border-gray-100">
-                        <strong>세대마다 경험한 문화와 환경의 차이</strong>로 인해 사용하는 어휘가 다르게 나타나는 현상.
-                    </p>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="bg-purple-50 rounded-xl p-5 border border-purple-100">
-                            <h4 class="font-bold text-purple-800 mb-2 text-xl">청소년층</h4>
-                            <p class="text-gray-700 text-base mb-3"><strong>줄임말, 외래어 등 새말</strong>의 잦은 사용.</p>
-                            <p class="text-base text-gray-500"><span class="font-semibold text-purple-600">예시:</span> 생선(생일선물), 알잘딱깔센</p>
-                        </div>
-                        <div class="bg-purple-50 rounded-xl p-5 border border-purple-100">
-                            <h4 class="font-bold text-purple-800 mb-2 text-xl">노년층</h4>
-                            <p class="text-gray-700 text-base mb-3"><strong>한자어, 예의를 갖춘 표현</strong>의 잦은 사용.</p>
-                            <p class="text-base text-gray-500"><span class="font-semibold text-purple-600">예시:</span> 심심(甚深)한 감사, 강녕(康寧)</p>
-                        </div>
-                    </div>
-                    <div class="mt-6 flex items-center justify-center bg-blue-50 text-blue-800 p-4 rounded-lg text-base border border-blue-100">
-                        <i class="fa-solid fa-lightbulb text-blue-500 mr-2 text-xl"></i>
-                        <p><strong>바람직한 태도:</strong> <strong>서로의 차이 인정</strong> 및 상대방이 <strong>이해할 수 있는 어휘</strong> 사용.</p>
-                    </div>
+            <!-- 세대에 따른 어휘 -->
+            <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden mb-6">
+                <div class="px-6 py-4 border-b border-gray-100 flex items-center gap-2">
+                    <i class="fa-solid fa-people-arrows text-purple-500 text-2xl mr-2"></i>
+                    <h3 class="text-xl font-bold text-gray-800">세대에 따른 어휘</h3>
                 </div>
-
-                <!-- 분야에 따른 어휘 -->
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
-                    <h3 class="text-2xl font-bold text-gray-800 mb-2 border-b pb-2"><i class="fa-solid fa-user-doctor text-emerald-500 mr-2"></i>분야에 따른 어휘</h3>
-                    <p class="text-gray-700 text-base mb-6 bg-gray-50 p-4 rounded-lg border border-gray-100">
-                        특정한 분야에서 내용의 <strong>빠르고 정확한 전달</strong>을 위해 뜻이 명확한 <strong>전문어</strong>를 사용하는 현상.
-                    </p>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="bg-emerald-50 rounded-xl p-5 border border-emerald-100">
-                            <h4 class="font-bold text-emerald-800 mb-2 text-xl">전문어 수용자</h4>
-                            <p class="text-gray-700 text-base mb-3">효율성을 높이는 <strong>전문어의 효과</strong> 이해.</p>
-                        </div>
-                        <div class="bg-emerald-50 rounded-xl p-5 border border-emerald-100">
-                            <h4 class="font-bold text-emerald-800 mb-2 text-xl">전문어 사용자</h4>
-                            <p class="text-gray-700 text-base mb-3">일반인과 대화 시 전문어를 <strong>쉽게 풀어서</strong> 표현.</p>
-                        </div>
+                <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-purple-50/30 p-4 rounded-xl border border-purple-50 flex items-center gap-4">
+                        <span class="font-bold text-purple-900 whitespace-nowrap shrink-0">청소년층</span>
+                        <div class="w-px h-6 bg-purple-200 shrink-0"></div>
+                        <span class="text-gray-700 text-base">줄임말, 외래어 등 새말의 잦은 사용.</span>
                     </div>
-                </div>
-
-                <!-- 매체에 따른 어휘 -->
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
-                    <h3 class="text-2xl font-bold text-gray-800 mb-2 border-b pb-2"><i class="fa-solid fa-mobile-screen text-orange-500 mr-2"></i>매체에 따른 어휘</h3>
-                    <p class="text-gray-700 text-base mb-6 bg-gray-50 p-4 rounded-lg border border-gray-100">
-                        인터넷 등 통신 매체의 특성에 따라 어휘의 형태나 쓰임이 다양하게 <strong>변이</strong>되는 현상.
-                    </p>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="bg-orange-50 rounded-xl p-5 border border-orange-100">
-                            <h4 class="font-bold text-orange-800 mb-2 text-xl">인터넷 언어의 특성</h4>
-                            <p class="text-gray-700 text-base mb-3"><strong>간편하고 생생한 표현</strong> 추구 및 <strong>그림말, 사진, 영상</strong> 등의 적극적 활용.</p>
-                        </div>
-                        <div class="bg-blue-50 rounded-xl p-5 border border-blue-100">
-                            <h4 class="font-bold text-blue-800 mb-2 text-xl">바람직한 태도</h4>
-                            <p class="text-gray-700 text-base mb-3">무분별한 사용 자제 및 <strong>소통 상황과 대상</strong>을 고려한 선택.</p>
-                        </div>
+                    <div class="bg-purple-50/30 p-4 rounded-xl border border-purple-50 flex items-center gap-4">
+                        <span class="font-bold text-purple-900 whitespace-nowrap shrink-0">노년층</span>
+                        <div class="w-px h-6 bg-purple-200 shrink-0"></div>
+                        <span class="text-gray-700 text-base">한자어, 예의를 갖춘 표현의 잦은 사용.</span>
                     </div>
                 </div>
             </div>
+
+            <!-- 분야에 따른 어휘 -->
+            <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden mb-6">
+                <div class="px-6 py-4 border-b border-gray-100 flex items-center gap-2">
+                    <i class="fa-solid fa-network-wired text-green-500 text-xl mr-2"></i>
+                    <h3 class="text-xl font-bold text-gray-800">분야에 따른 어휘</h3>
+                </div>
+                <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-green-50/30 p-4 rounded-xl border border-green-50 flex items-center gap-4">
+                        <span class="font-bold text-green-900 whitespace-nowrap shrink-0">전문어 수용자</span>
+                        <div class="w-px h-6 bg-green-200 shrink-0"></div>
+                        <span class="text-gray-700 text-base">효율성을 높이는 <strong class="text-gray-900">전문어의 효과 이해</strong>.</span>
+                    </div>
+                    <div class="bg-green-50/30 p-4 rounded-xl border border-green-50 flex items-center gap-4">
+                        <span class="font-bold text-green-900 whitespace-nowrap shrink-0">전문어 사용자</span>
+                        <div class="w-px h-6 bg-green-200 shrink-0"></div>
+                        <span class="text-gray-700 text-base">일반인과 대화 시 전문어를 <strong class="text-gray-900">쉽게 풀어서 표현</strong>.</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 매체에 따른 어휘 -->
+            <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+                <div class="px-6 py-4 border-b border-gray-100 flex items-center gap-2">
+                    <h3 class="text-xl font-bold text-gray-800">매체에 따른 어휘</h3>
+                </div>
+                <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-orange-50/30 p-4 rounded-xl border border-orange-50 flex items-center gap-4">
+                        <span class="font-bold text-orange-900 whitespace-nowrap shrink-0">인터넷 언어</span>
+                        <div class="w-px h-6 bg-orange-200 shrink-0 hidden md:block"></div>
+                        <span class="text-gray-700 text-base">간편하고 생생한 표현, 그림말, 영상 활용.</span>
+                    </div>
+                    <div class="bg-blue-50/30 p-4 rounded-xl border border-blue-50 flex items-center gap-4">
+                        <span class="font-bold text-blue-900 whitespace-nowrap shrink-0">바람직한 태도</span>
+                        <div class="w-px h-6 bg-blue-200 shrink-0 hidden md:block"></div>
+                        <span class="text-gray-700 text-base">무분별한 사용 자제 및 <strong class="text-gray-900">상황을 고려한 선택</strong>.</span>
+                    </div>
+                </div>
+            </div>
+
         </section>
 
         <!-- 3. 어휘 정리 Section -->
         <section id="sec-flashcards" class="content-section hidden animate-fade-in">
-            <div class="flex flex-col items-center text-center mb-8 max-w-2xl mx-auto border-2 border-yellow-400 bg-white rounded-2xl p-6 shadow-sm">
-                <h2 class="text-4xl font-bold text-gray-800 mb-3">어휘 <span class="text-yellow-500">정리</span></h2>
-                <p class="text-gray-600 leading-relaxed text-xl">카드를 <strong>클릭(또는 터치)</strong>하면 단어의 상세한 뜻과 예시 자료가 나타납니다. (20개 단어 수록)</p>
+            <div id="flashcard-grid" class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-5xl mx-auto"></div>
+        </section>
+
+        <!-- ★ 게임 Section ★ -->
+        <section id="sec-game" class="content-section hidden animate-fade-in">
+            <div class="flex flex-col items-center text-center mb-6 max-w-3xl mx-auto border-2 border-indigo-400 bg-white rounded-2xl p-6 shadow-sm">
+                <h2 class="text-4xl font-bold text-gray-800 mb-4">어휘 <span class="text-indigo-500">벽돌 깨기</span></h2>
+                <div class="text-gray-600 leading-relaxed text-lg bg-gray-50 p-4 rounded-lg w-full">
+                    <p class="mb-3 text-left">🎮 <strong>조작법:</strong> 마우스나 터치로 바(Paddle)를 움직이세요. / 🔄 <strong>모드 전환:</strong> [스페이스바]로 바 색상 변경</p>
+                    <div class="flex flex-row items-center justify-center gap-4 bg-white p-3 rounded border border-gray-200">
+                        <div class="flex items-center whitespace-nowrap"><span class="w-4 h-4 rounded-full bg-green-500 mr-2"></span><span class="text-green-700 font-bold mr-1">초록색 바:</span> 고유어만 파괴</div>
+                        <div class="w-px h-4 bg-gray-300"></div>
+                        <div class="flex items-center whitespace-nowrap"><span class="w-4 h-4 rounded-full bg-red-500 mr-2"></span><span class="text-red-600 font-bold mr-1">빨간색 바:</span> 한자어만 파괴</div>
+                        <div class="w-px h-4 bg-gray-300"></div>
+                        <div class="flex items-center whitespace-nowrap"><span class="w-4 h-4 rounded-full bg-blue-500 mr-2"></span><span class="text-blue-600 font-bold mr-1">파란색 바:</span> 외래어만 파괴</div>
+                    </div>
+                </div>
+                <button id="btn-start-game" onclick="initGame()" class="mt-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-8 rounded-full text-xl shadow-lg transition">
+                    게임 시작
+                </button>
             </div>
 
-            <div id="flashcard-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                <!-- Cards will be injected by JavaScript -->
+            <!-- 게임 화면 영역 -->
+            <div id="game-area" class="hidden max-w-4xl mx-auto relative">
+                <div class="flex justify-between items-center bg-slate-800 text-white px-4 py-2 rounded-t-lg font-bold text-lg">
+                    <div id="game-score">점수: 0 / 100 (속도: x0.8)</div>
+                    <div id="game-lives">남은 생명: 3</div>
+                </div>
+                <div class="w-full relative game-container bg-slate-800">
+                    <canvas id="gameCanvas" width="800" height="500"></canvas>
+                </div>
+                <div id="game-overlay" class="hidden absolute inset-0 bg-black bg-opacity-70 flex flex-col items-center justify-center rounded-b-lg rounded-t-none z-10">
+                    <h2 id="overlay-msg" class="text-5xl font-black text-white mb-6">게임 오버</h2>
+                    <button onclick="initGame()" class="bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-bold py-3 px-8 rounded-full text-xl shadow-lg transition">다시 하기</button>
+                </div>
             </div>
         </section>
 
         <!-- 4. 형성 평가 Section -->
-        <section id="sec-quiz" class="content-section hidden animate-fade-in">
-            <div class="flex flex-col items-center text-center mb-8 max-w-2xl mx-auto border-2 border-emerald-400 bg-white rounded-2xl p-6">
-                <h2 class="text-4xl font-bold text-gray-800 mb-3"><span class="text-emerald-500">실시간 형성 평가</span></h2>
-                <p class="text-gray-600 leading-relaxed text-xl">문제를 풀고 제출하면 나의 응답 기록이 구글 스프레드시트로 자동 전송됩니다.</p>
+        <section id="sec-quiz" class="content-section hidden animate-fade-in max-w-4xl mx-auto">
+            <!-- 평가 안내 배너 -->
+            <div class="border border-green-400 bg-white rounded-2xl p-8 mb-6 text-center shadow-sm">
+                <h2 class="text-4xl font-bold text-green-500 mb-3">실시간 형성 평가</h2>
+                <p class="text-gray-600 text-lg">문제를 풀고 제출하면 나의 응답 기록이 구글 스프레드시트로 자동 전송됩니다.</p>
             </div>
 
-            <!-- Quiz Intro (User Info) -->
-            <div id="quiz-intro" class="max-w-md mx-auto bg-white rounded-2xl shadow-lg p-8">
-                <div class="flex flex-col items-center text-center mb-6">
-                    <i class="fa-solid fa-pen-to-square text-5xl text-blue-500 mb-3"></i>
-                    <h2 class="text-3xl font-bold text-gray-800 mb-2">학습자 등록</h2>
-                    <p class="text-gray-600 leading-relaxed text-base">평가 시작 전 인적 사항을 바르게 채워 주세요.</p>
-                </div>
-                
-                <form id="student-info-form" class="space-y-4">
-                    <div class="grid grid-cols-3 gap-3">
-                        <div>
-                            <label class="block text-base font-medium text-gray-700 mb-1">학년</label>
-                            <input type="number" id="student-grade" min="1" max="3" required placeholder="예: 1" class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition text-base">
-                        </div>
-                        <div>
-                            <label class="block text-base font-medium text-gray-700 mb-1">반</label>
-                            <input type="number" id="student-class" min="1" required placeholder="예: 2" class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition text-base">
-                        </div>
-                        <div>
-                            <label class="block text-base font-medium text-gray-700 mb-1">번호</label>
-                            <input type="number" id="student-num" min="1" required placeholder="예: 15" class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition text-base">
-                        </div>
+            <!-- 학습자 등록 (인적 사항 입력) -->
+            <div id="quiz-intro" class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 mb-8 flex flex-col md:flex-row items-center justify-between gap-6">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 bg-blue-50 text-blue-500 rounded-xl flex items-center justify-center text-2xl shrink-0">
+                        <i class="fa-solid fa-pen-to-square"></i>
                     </div>
                     <div>
-                        <label class="block text-base font-medium text-gray-700 mb-1">이름</label>
-                        <input type="text" id="student-name" required placeholder="홍길동" class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition text-base">
+                        <h3 class="text-xl font-bold text-gray-800">학습자 등록</h3>
+                        <p class="text-gray-500 text-sm">평가 시작 전 인적 사항 입력</p>
                     </div>
-                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-4 rounded-lg mt-6 transition text-lg shadow-md hover:shadow-lg">
-                        문제 풀기 시작
-                    </button>
-                </form>
-            </div>
-
-            <!-- Quiz Questions Area -->
-            <div id="quiz-area" class="max-w-3xl mx-auto hidden">
-                <div class="bg-blue-50 border border-blue-200 rounded-lg p-5 mb-6 flex justify-between items-center text-lg shadow-sm">
-                    <div>
-                        <span id="display-info" class="font-bold text-blue-800"></span> 학생, 화이팅!
+                </div>
+                <div class="flex flex-wrap items-end gap-3">
+                    <div class="w-16">
+                        <label class="block text-xs text-gray-500 mb-1 text-center">학년</label>
+                        <input type="number" id="stu-grade" class="w-full border border-gray-300 rounded-lg p-2 text-center focus:outline-none focus:border-blue-500" min="1" max="6">
                     </div>
-                    <div class="text-gray-600">총 <span id="answered-count" class="font-bold text-blue-600">0</span> / 10 문항 완료</div>
-                </div>
-
-                <div id="questions-container" class="space-y-8">
-                    <!-- Questions injected via JS -->
-                </div>
-                
-                <div class="mt-10 text-center border-t pt-8">
-                    <button id="btn-final-submit" onclick="showFinalResult()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-12 rounded-full shadow-lg text-xl transition disabled:bg-gray-400 disabled:cursor-not-allowed">
-                        결과 제출 및 확인
-                    </button>
-                    <p id="submit-warning" class="text-red-500 text-sm mt-2 hidden">모든 문제를 풀어야 결과를 제출할 수 있습니다.</p>
+                    <div class="w-16">
+                        <label class="block text-xs text-gray-500 mb-1 text-center">반</label>
+                        <input type="number" id="stu-class" class="w-full border border-gray-300 rounded-lg p-2 text-center focus:outline-none focus:border-blue-500" min="1" max="30">
+                    </div>
+                    <div class="w-16">
+                        <label class="block text-xs text-gray-500 mb-1 text-center">번호</label>
+                        <input type="number" id="stu-num" class="w-full border border-gray-300 rounded-lg p-2 text-center focus:outline-none focus:border-blue-500" min="1" max="50">
+                    </div>
+                    <div class="w-32">
+                        <label class="block text-xs text-gray-500 mb-1 text-center">이름</label>
+                        <input type="text" id="stu-name" class="w-full border border-gray-300 rounded-lg p-2 text-center focus:outline-none focus:border-blue-500" placeholder="홍길동">
+                    </div>
+                    <button onclick="startQuiz()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg shadow transition h-[42px]">시작하기</button>
                 </div>
             </div>
 
-            <!-- Quiz Results Area -->
-            <div id="quiz-result" class="max-w-3xl mx-auto hidden animate-fade-in">
-                <div class="bg-white rounded-2xl shadow-xl overflow-hidden mb-6">
-                    <div class="bg-gradient-to-r from-blue-500 to-indigo-600 p-8 text-center text-white">
-                        <h2 class="text-4xl font-bold mb-2">최종 평가 결과</h2>
-                        <p id="result-user-info" class="text-blue-100 text-lg"></p>
-                        <div class="text-7xl font-black mt-6 mb-2" id="score-display">100점</div>
-                        <p id="score-message" class="text-2xl"></p>
-                        <p id="data-send-status" class="text-yellow-200 text-base mt-2 font-semibold"></p>
-                    </div>
-                    <div class="p-8 text-center bg-gray-50">
-                        <p class="text-lg text-gray-700 mb-6">수고하셨습니다! 문제별 상세 채점 결과와 오답 해설은 상단의 문제 리스트에서 확인하실 수 있습니다.</p>
-                        <button onclick="resetQuiz()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 px-8 rounded-lg shadow-md transition text-lg">
-                            처음부터 다시 풀기
-                        </button>
-                    </div>
+            <!-- 문제 풀이 영역 (초기 숨김) -->
+            <div id="quiz-area" class="hidden">
+                <div id="questions-container" class="space-y-6">
+                    <!-- JS에서 문항 동적 생성 -->
+                </div>
+                <div class="text-center mt-8 mb-12">
+                    <button onclick="submitQuiz()" class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-4 px-12 rounded-xl text-xl shadow-lg transition">답안 제출하기</button>
                 </div>
             </div>
 
+            <!-- 결과 화면 영역 (초기 숨김) -->
+            <div id="quiz-result" class="hidden animate-fade-in text-center mb-12">
+                <div class="bg-gradient-to-r from-emerald-500 to-teal-600 p-8 rounded-2xl text-white shadow-xl">
+                    <h2 class="text-4xl font-bold mb-2">제출 완료! 🎉</h2>
+                    <p class="text-xl opacity-90 mb-6">수고하셨습니다. 채점 결과를 확인하세요.</p>
+                    <div class="bg-white/20 rounded-xl p-6 inline-block">
+                        <p class="text-lg mb-1" id="result-stu-info"></p>
+                        <p class="text-5xl font-black" id="result-score"></p>
+                    </div>
+                </div>
+                <div id="review-container" class="mt-8 space-y-6 text-left">
+                    <!-- JS에서 해설 동적 생성 -->
+                </div>
+            </div>
         </section>
-
     </main>
 
-    <footer class="bg-gray-800 text-gray-400 py-8 mt-12 text-center text-base">
-        <p>본 페이지는 중학 국어 문법(비상교육) 단원 학습을 돕기 위해 제작되었습니다.</p>
-        <p class="mt-1">&copy; 2026 Interactive Korean Learning.</p>
-    </footer>
-
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            renderFlashcards();
-            renderQuiz();
-        });
-
-        // --- Navigation Logic ---
+        // === 탭 전환 로직 ===
         function switchTab(tabId) {
-            // 모든 섹션 숨기기 방어적 코드 작성 (null 체크 보강)
-            const sections = document.querySelectorAll('.content-section');
-            sections.forEach(sec => {
-                if (sec) sec.classList.add('hidden');
-            });
+            document.querySelectorAll('.content-section').forEach(sec => sec.classList.add('hidden'));
+            document.getElementById('sec-' + tabId).classList.remove('hidden');
             
-            const targetSection = document.getElementById('sec-' + tabId);
-            if(targetSection) {
-                targetSection.classList.remove('hidden');
-            }
-
-            // 모든 탭 버튼 비활성화 상태로
-            const btns = document.querySelectorAll('.tab-btn');
-            btns.forEach(btn => {
-                if (btn) {
-                    btn.classList.remove('tab-active');
-                    btn.classList.add('hover:bg-gray-100');
-                }
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('tab-active');
+                if(btn.id !== 'tab-game') btn.classList.add('hover:bg-gray-100');
             });
-            
-            // 클릭한 버튼 활성화
             const activeBtn = document.getElementById('tab-' + tabId);
-            if(activeBtn) {
-                 activeBtn.classList.add('tab-active');
-                 activeBtn.classList.remove('hover:bg-gray-100');
-            }
-
-             if(targetSection) {
-                 window.scrollTo({
-                     top: targetSection.offsetTop - 180,
-                     behavior: 'smooth'
-                 });
-             }
+            activeBtn.classList.add('tab-active');
         }
 
-        // --- Vocabulary Data ---
-        const vocabularyData = [
-            { word: "의학", meaning: "인체의 보건, 질병의 치료 및 예방을 연구하는 학문", example: "그는 의학을 전공하여 훌륭한 의사가 되었다." },
-            { word: "분야", meaning: "여러 갈래로 나누어진 범위나 부분", example: "자신이 관심 있는 분야의 책을 꾸준히 읽어야 한다." },
-            { word: "세대", meaning: "같은 시대에 살면서 공통의 의식을 가지는 비슷한 연령층", example: "세대 간의 원활한 소통을 위해 서로 노력해야 준다." },
-            { word: "양상", meaning: "사물이나 현상의 모양이나 상태", example: "최근 인터넷 언어의 양상이 더욱 다양해지고 있다." },
-            { word: "관용", meaning: "남의 잘못 등을 너그럽게 받아들이거나 용서함", example: "다른 사람의 실수를 관용하는 태도를 지녀야 한다." },
-            { word: "전문어", meaning: "특정한 전문 분야에서 주로 사용하는 용어", example: "의사들끼리 대화할 때는 의학 전문어를 많이 사용한다." },
-            { word: "무료하다", meaning: "흥미 있는 일이 없어 심심하고 지루하다", example: "주말 내내 집에만 있었더니 너무 무료하다." },
-            { word: "다채롭다", meaning: "여러 가지 색채나 형태, 종류 등이 한데 어울리어 호화스럽다", example: "가을 산은 다채로운 단풍으로 물들었다." },
-            { word: "다양성", meaning: "모양, 빛깔, 형태, 양식 등이 여러 가지로 많은 특성", example: "현대 사회는 문화의 다양성을 존중해야 한다." },
-            { word: "단절", meaning: "유대나 연관 관계를 끊음", example: "대화가 부족하면 가족 간의 단절이 생길 수 있다." },
-            { word: "바람직하다", meaning: "바랄 만한 가치가 있다", example: "매일 규칙적으로 운동하는 것은 바람직한 습관이다." },
-            { word: "스스럼없다", meaning: "조심스럽거나 부끄러운 마음이 없다", example: "그들은 어린 시절부터 스스럼없이 지낸 친구 사이이다." },
-            { word: "고유어", meaning: "해당 언어에 본디부터 있던 말이나 기초하여 새로 만들어진 말", example: "'하늘', '구름'은 아름다운 우리 고유어이다." },
-            { word: "수용하다", meaning: "어떠한 것을 받아들이다", example: "친구의 충고를 기분 좋게 수용했다." },
-            { word: "고뿔", meaning: "감기를 일상적으로 이르는 예스러운 말 (고유어)", example: "한겨울에 얇게 입고 다니다가 고뿔에 걸렸다." },
-            { word: "기각하다", meaning: "소송이나 청구가 이유 없다고 판단하여 물리치는 일 (법률어)", example: "대법원은 원고의 상고를 기각했다." },
-            { word: "의도적", meaning: "무엇을 하려고 꾀하는 것", example: "그는 화제를 돌리기 위해 의도적으로 기침을 했다." },
-            { word: "개선", meaning: "잘못된 것이나 부족한 것 등을 고쳐 더 좋게 만듦", example: "학교의 낡은 시설을 새롭게 개선하였다." },
-            { word: "효율성", meaning: "들인 노력과 얻은 결과의 비율이 높은 특성", example: "전문어를 사용하면 의사소통의 효율성을 높일 수 있다." },
-            { word: "변이", meaning: "세월의 흐름에 따라 바뀌고 변함", example: "인터넷의 발달로 언어의 변이 속도가 매우 빨라졌다." }
+        // === 플래시카드 생성 (20개 단어) ===
+        const flashcardWords = [
+            {w:"의학", d:"병의 치료와 예방 따위를 연구하는 학문", e:"그는 의학을 공부하여 의사가 되었다."},
+            {w:"분야", d:"여러 갈래로 나누어진 범위나 부분", e:"자신이 관심 있는 분야의 책을 꾸준히 읽어야 한다."},
+            {w:"세대", d:"같은 시대에 살면서 공통의 의식을 가지는 비슷한 연령층", e:"젊은 세대와 기성세대 간의 소통이 필요하다."},
+            {w:"양상", d:"사물이나 현상의 모양이나 상태", e:"사건이 새로운 양상으로 전개되고 있다."},
+            {w:"관용", d:"남의 잘못을 너그럽게 받아들이거나 용서함", e:"그는 관용을 베풀어 친구의 실수를 용서했다."},
+            {w:"전문어", d:"특정 전문 분야에서 주로 쓰이는 어휘", e:"의사들은 환자의 상태를 설명할 때 전문어를 사용한다."},
+            {w:"무료하다", d:"흥미 있는 일이 없어 심심하고 지루하다", e:"비가 와서 집에만 있으니 너무 무료하다."},
+            {w:"다채롭다", d:"여러 가지 색채나 종류, 현상 따위가 섞여 있어 화려하다", e:"가을 산이 다채로운 단풍으로 물들었다."},
+            {w:"다양성", d:"모양, 빛깔, 형태, 양식 따위가 여러 가지로 많은 특성", e:"현대 사회는 문화적 다양성을 존중해야 한다."},
+            {w:"단절", d:"유대나 연관 관계 따위가 끊어짐", e:"세대 간의 소통 단절이 심각한 문제로 대두되었다."},
+            {w:"바람직하다", d:"바랄 만한 가치가 있다", e:"규칙적인 운동은 건강을 위해 바람직하다."},
+            {w:"스스럼없다", d:"조심스럽거나 부끄러운 마음이 없다", e:"우리는 어릴 적부터 스스럼없이 지낸 친구 사이이다."},
+            {w:"고유어", d:"우리말에 있었거나 그것을 바탕으로 새로 만들어진 단어", e:"'하늘', '바다'는 대표적인 고유어이다."},
+            {w:"수용하다", d:"어떠한 것을 받아들이다", e:"새로운 문화를 거부감 없이 수용하다."},
+            {w:"고뿔", d:"'감기'를 일상적으로 이르는 고유어", e:"한겨울에 얇게 입고 다니다가 고뿔에 걸렸다."},
+            {w:"기각하다", d:"제안이나 요구를 받아들이지 않고 물리치다", e:"법원은 증거 불충분으로 그의 청구를 기각했다."},
+            {w:"의도적", d:"어떤 목적이나 생각을 가지고 꾀하는 것", e:"그는 의도적으로 내 연락을 피하고 있다."},
+            {w:"개선", d:"잘못된 것이나 부족한 것, 나쁜 것 따위를 고쳐 더 좋게 만듦", e:"서비스 개선을 위해 고객의 의견을 수렴했다."},
+            {w:"효율성", d:"들인 노력이나 자본에 비하여 얻는 결과의 비율이 높은 특성", e:"업무의 효율성을 높이기 위해 새로운 프로그램을 도입했다."},
+            {w:"변이", d:"언어가 사용하는 사람이나 상황에 따라 달라지는 현상", e:"지역에 따라 방언이라는 언어 변이가 나타난다."}
         ];
 
-        function renderFlashcards() {
-            const grid = document.getElementById('flashcard-grid');
-            grid.innerHTML = '';
-            vocabularyData.forEach((item) => {
-                const cardHTML = `
-                    <div class="h-64 w-full perspective-1000 cursor-pointer flip-card group" onclick="this.classList.toggle('flipped')">
-                        <div class="flip-card-inner rounded-xl shadow-md border border-gray-100">
-                            <!-- Front -->
-                            <div class="absolute inset-0 backface-hidden bg-white rounded-xl flex flex-col items-center justify-center text-center p-4 hover:bg-gray-50 transition-colors">
-                                <h3 class="text-4xl font-bold text-gray-800">${item.word}</h3>
-                                <div class="mt-4 text-blue-500 bg-blue-50 px-3 py-1.5 rounded-full text-base font-semibold opacity-80 group-hover:opacity-100">
-                                    <i class="fa-solid fa-rotate mr-1"></i> 눌러서 확인
-                                </div>
-                            </div>
-                            <!-- Back -->
-                            <div class="absolute inset-0 backface-hidden rotate-y-180 bg-gradient-to-b from-blue-50 to-white border border-blue-200 rounded-xl p-5 flex flex-col justify-center text-left overflow-y-auto">
-                                <p class="font-bold text-blue-800 text-base mb-1 pb-1 border-b border-blue-200"><i class="fa-solid fa-quote-left mr-1"></i>뜻 설명</p>
-                                <p class="text-lg text-gray-800 leading-snug mb-3 break-keep">${item.meaning || item.해석}</p>
-                                
-                                <p class="font-bold text-green-700 text-base mb-1"><i class="fa-solid fa-pen mr-1"></i>예시 자료</p>
-                                <p class="text-base text-gray-700 bg-white p-2 rounded-lg border border-green-100 break-keep leading-snug">${item.example}</p>
+        const grid = document.getElementById('flashcard-grid');
+        flashcardWords.forEach((item) => {
+            grid.innerHTML += `
+                <div class="h-44 perspective-1000 cursor-pointer flip-card" onclick="this.classList.toggle('flipped')">
+                    <div class="flip-card-inner">
+                        <div class="absolute w-full h-full backface-hidden bg-white border border-gray-100 rounded-xl shadow-sm flex items-center justify-center text-2xl font-bold text-gray-800 hover:border-blue-400 hover:shadow-md transition">
+                            ${item.w}
+                        </div>
+                        <div class="absolute w-full h-full backface-hidden rotate-y-180 rounded-xl shadow-sm flex flex-col justify-center bg-white border border-blue-200 p-4 text-left">
+                            <p class="text-[15px] font-bold text-blue-700 mb-2 leading-snug">${item.d}</p>
+                            <div class="bg-gray-50 border border-gray-100 rounded p-2 text-[13px] text-gray-600 leading-snug">
+                                ${item.e}
                             </div>
                         </div>
                     </div>
-                `;
-                grid.insertAdjacentHTML('beforeend', cardHTML);
-            });
-        }
-
-        // --- Quiz Data with Explanations ---
-        const quizData = [
-            {
-                id: 1, type: "ox",
-                question: "1. 어휘는 세대, 분야, 매체 등에 따라 다양한 양상으로 나타난다.",
-                answer: "O",
-                explanation: "어휘는 사용하는 집단(세대)과 환경(전문 분야, 매체) 등에 따라 고유한 특징과 다양한 양상을 보입니다."
-            },
-            {
-                id: 2, type: "short",
-                question: "2. 특정한 범위 안에서 쓰이는 낱말의 묶음(무리)을 무엇이라고 합니까?",
-                answer: "어휘",
-                explanation: "'어휘'는 일정한 기준에 따라 한데 묶은 단어들의 무리를 뜻합니다."
-            },
-            {
-                id: 3, type: "short",
-                question: "3. 한 나라에서 공통어로 쓰기 위하여 규범으로 정한 언어를 무엇이라고 합니까?",
-                answer: "표준어",
-                explanation: "원활한 의사소통을 위해 국가에서 공통어로 제정한 언어는 '표준어'입니다."
-            },
-            {
-                id: 4, type: "mcq",
-                question: "4. 다음 중 청소년층 어휘의 특성으로 알맞지 않은 것은?",
-                options: [
-                    "한자어나 예의를 갖춘 표현을 주로 사용한다.",
-                    "줄임말을 자주 만들어 사용한다.",
-                    "외래어 등 새로운 말(새말)을 쉽게 받아들인다.",
-                    "인터넷 매체의 영향을 많이 받는다.",
-                    "또래끼리의 유대감을 형성하는 데 도움을 준다."
-                ],
-                answer: 0,
-                explanation: "한자어나 예의를 갖춘 표현을 주로 사용하는 것은 노년층 어휘의 특징입니다."
-            },
-            {
-                id: 5, type: "mcq",
-                question: "5. 전문어에 대한 설명으로 가장 올바른 것은?",
-                options: [
-                    "주로 순우리말로 이루어져 있어 이해하기 쉽다.",
-                    "뜻이 명확하고 구체적이어서 내용을 빠르고 정확하게 전달한다.",
-                    "일반인과의 대화에서 무조건 많이 쓰는 것이 소통에 유리하다.",
-                    "세대에 따른 어휘 양상을 보여주는 가장 대표적인 예이다.",
-                    "내용을 모호하게 전달하여 상상력을 자극할 때 유용하다."
-                ],
-                answer: 1,
-                explanation: "전문어는 해당 분야의 내용을 빠르고 정확하게 전달하기 위해 사용하는, 뜻이 명확한 어휘입니다."
-            },
-            {
-                id: 6, type: "mcq",
-                question: "6. 전문어를 사용할 때의 바람직한 태도는 무엇입니까?",
-                options: [
-                    "일반인에게도 여과 없이 그대로 사용하여 전문성을 뽐낸다.",
-                    "전문 지식을 과시하기 위해 일상 대화에서도 억지로 끼워 넣는다.",
-                    "해당 분야 외의 일반인과 대화할 때는 쉽게 풀어서 표현한다.",
-                    "의사소통의 혼란을 막기 위해 전문어 사용을 법으로 금지한다.",
-                    "다른 분야의 전문어를 섞어 써서 새로운 어휘를 창조한다."
-                ],
-                answer: 2,
-                explanation: "전문어는 일반인이 이해하기 어려울 수 있으므로, 일반인과 소통할 때는 쉬운 말로 풀어서 표현해야 합니다."
-            },
-            {
-                id: 7, type: "mcq",
-                question: "7. 인터넷 언어의 특성이 아닌 것은?",
-                options: [
-                    "글자를 간편하고 빠르게 쓰려는 경향이 있다.",
-                    "감정이나 상황을 생생하게 표현하려고 한다.",
-                    "글자 모양을 변형하여 재미있게 표현하기도 단다.",
-                    "글을 쓸 때 띄어쓰기 등 엄격한 문법 규칙을 항상 준수한다.",
-                    "그림말(이모티콘), 사진, 영상 등을 언어의 일부로 활용한다."
-                ],
-                answer: 3,
-                explanation: "인터넷 언어는 빠르고 간편한 소통을 목적으로 하므로 띄어쓰기나 규범 문법을 파괴하거나 변형하는 경우가 많습니다."
-            },
-            {
-                id: 8, type: "mcq",
-                question: "8. 다양한 어휘 양상을 대하는 우리의 태도로 가장 적절한 것은?",
-                options: [
-                    "소통의 통일성을 위해 우리 세대의 어휘만 고집하여 사용한다.",
-                    "서로의 차이를 인정하고 소통 상황과 대상에 맞는 어휘를 쓴다.",
-                    "인터넷 언어는 국어를 파괴하므로 무조건 배척하고 금지한다.",
-                    "세대 차이를 줄이기 위해 노년층에게 무조건 최신 유행어를 가르친다.",
-                    "전문어는 일반인이 알아듣기 어려우므로 아예 없애버려야 한다."
-                ],
-                answer: 1,
-                explanation: "다양한 어휘 양상을 이해하고 존중하며, 상대방과 상황에 맞는 적절한 어휘를 선택해 소통해야 합니다."
-            },
-            {
-                id: 9, type: "mcq",
-                question: "9. 다음 중 노년층 어휘의 특성으로 알맞은 것은?",
-                options: [
-                    "'강녕', '심심한 감사' 등 한자어, 예의를 갖춘 표현을 자주 쓴다.",
-                    "인터넷 용어와 줄임말 사용 비율이 전 세대 중 가장 높다.",
-                    "새로운 유행어를 가장 먼저 받아들여 실생활에 적용한다.",
-                    "단어의 길이를 최대한 줄여서 말하는 것을 선호한다.",
-                    "외국어를 적극적으로 혼용하여 대화하는 특징이 있다."
-                ],
-                answer: 0,
-                explanation: "노년층은 전통적 예절을 중시하고 한자어에 익숙하여, 격식을 갖춘 표현과 한자어를 자주 사용합니다."
-            },
-            {
-                id: 10, type: "mcq",
-                question: "10. 다음 중 뜻과 단어의 연결이 바르지 않은 것은?",
-                options: [
-                    "단절: 유대나 연관 관계를 끊음",
-                    "무료하다: 흥미 있는 일이 없어 심심하고 지루하다",
-                    "관용: 특정한 전문 분야에서만 비밀스럽게 사용하는 말",
-                    "스스럼없다: 조심스럽거나 부끄러운 마음이 없다",
-                    "수용하다: 어떠한 것을 받아들이다"
-                ],
-                answer: 2,
-                explanation: "관용은 '남의 잘못을 너그럽게 용서함'을 뜻하며, 전문 분야에서 쓰는 말은 '전문어'입니다."
-            }
-        ];
-
-        let currentScore = 0;
-        let answeredQuestions = new Set();
-        let studentAnswersData = {};
-
-        function renderQuiz() {
-            const container = document.getElementById('questions-container');
-            container.innerHTML = '';
-            studentAnswersData = {};
-
-            quizData.forEach((q) => {
-                let html = `<div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200" id="q-container-${q.id}">
-                    <p class="font-bold text-xl mb-5 text-gray-800">${q.question}</p>`;
-
-                if (q.type === 'ox') {
-                    html += `
-                        <div class="flex gap-4 pl-4">
-                            <label class="flex items-center cursor-pointer p-4 border rounded-lg hover:bg-blue-50 w-28 justify-center transition has-[:checked]:bg-blue-100 has-[:checked]:border-blue-500">
-                                <input type="radio" name="q${q.id}" value="O" onchange="checkAnswer(${q.id})" class="w-5 h-5 text-blue-600 hidden">
-                                <span class="text-3xl font-bold text-blue-600">O</span>
-                            </label>
-                            <label class="flex items-center cursor-pointer p-4 border rounded-lg hover:bg-red-50 w-28 justify-center transition has-[:checked]:bg-red-100 has-[:checked]:border-red-500">
-                                <input type="radio" name="q${q.id}" value="X" onchange="checkAnswer(${q.id})" class="w-5 h-5 text-red-600 hidden">
-                                <span class="text-3xl font-bold text-red-600">X</span>
-                            </label>
-                        </div>
-                    `;
-                } else if (q.type === 'short') {
-                    html += `
-                        <div class="pl-4 flex gap-2">
-                            <input type="text" id="input-q${q.id}" placeholder="정답을 입력하세요" class="w-full sm:w-1/2 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-lg">
-                            <button type="button" id="btn-check-${q.id}" onclick="checkAnswer(${q.id})" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition">확인</button>
-                        </div>
-                        <p id="warn-q${q.id}" class="text-red-500 text-sm hidden mt-2 pl-4">정답을 입력해 주세요.</p>
-                    `;
-                } else if (q.type === 'mcq') {
-                    html += `<div class="space-y-3 pl-2">`;
-                    q.options.forEach((opt, optIndex) => {
-                        html += `
-                            <label class="flex items-start p-4 border rounded-lg cursor-pointer hover:bg-gray-50 transition has-[:checked]:bg-blue-50 has-[:checked]:border-blue-500">
-                                <input type="radio" name="q${q.id}" value="${optIndex}" onchange="checkAnswer(${q.id})" class="mt-1 mr-4 w-5 h-5 text-blue-600">
-                                <span class="text-gray-700 leading-tight text-lg">${optIndex + 1}. ${opt}</span>
-                            </label>
-                        `;
-                    });
-                    html += `</div>`;
-                }
-                
-                html += `<div id="feedback-${q.id}" class="hidden mt-6 p-4 rounded-lg border"></div>`;
-                html += `</div>`;
-                container.insertAdjacentHTML('beforeend', html);
-            });
-        }
-
-        // Immediate Grading Logic
-        function checkAnswer(qid) {
-            if (answeredQuestions.has(qid)) return;
-
-            const q = quizData.find(item => item.id === qid);
-            let userAnswer;
-            let isCorrect = false;
-
-            if (q.type === 'short') {
-                const inputEl = document.getElementById(`input-q${qid}`);
-                userAnswer = inputEl.value.trim();
-                if (!userAnswer) {
-                    document.getElementById(`warn-q${qid}`).classList.remove('hidden');
-                    return;
-                }
-                document.getElementById(`warn-q${qid}`).classList.add('hidden');
-                isCorrect = userAnswer.replace(/\s/g, '') === q.answer.replace(/\s/g, '');
-                
-                inputEl.disabled = true;
-                inputEl.classList.add('bg-gray-100');
-                const btnCheck = document.getElementById(`btn-check-${qid}`);
-                if (btnCheck) {
-                    btnCheck.disabled = true;
-                    btnCheck.classList.add('bg-gray-400', 'cursor-not-allowed');
-                }
-            } else {
-                const selected = document.querySelector(`input[name="q${qid}"]:checked`);
-                if (!selected) return;
-                userAnswer = selected.value;
-                if (q.type === 'ox') {
-                    isCorrect = userAnswer === q.answer;
-                } else if (q.type === 'mcq') {
-                    isCorrect = parseInt(userAnswer) === q.answer;
-                }
-                
-                document.querySelectorAll(`input[name="q${qid}"]`).forEach(el => {
-                    el.disabled = true;
-                    if(el.parentElement) el.parentElement.classList.add('cursor-not-allowed', 'opacity-70');
-                });
-            }
-
-            answeredQuestions.add(qid);
-            if (isCorrect) currentScore += 10;
-            const countDisplay = document.getElementById('answered-count');
-            if (countDisplay) countDisplay.textContent = answeredQuestions.size;
-
-            let displayUserAnswer = userAnswer;
-            if (q.type === 'mcq') {
-                displayUserAnswer = (parseInt(userAnswer) + 1); // 5지선다 응답은 1~5 번호로 변경
-            }
-            
-            studentAnswersData["q" + qid] = {
-                userAnswer: displayUserAnswer,
-                isCorrect: isCorrect ? "O" : "X"
-            };
-
-            const feedbackEl = document.getElementById(`feedback-${qid}`);
-            if (feedbackEl) {
-                feedbackEl.classList.remove('hidden');
-                
-                if (isCorrect) {
-                    feedbackEl.classList.add('bg-green-50', 'border-green-300', 'text-green-900');
-                    feedbackEl.innerHTML = `
-                        <div class="flex items-center gap-2 mb-2">
-                            <i class="fa-solid fa-circle-check text-2xl text-green-600"></i>
-                            <span class="font-bold text-xl">정답입니다!</span>
-                        </div>
-                        <p class="text-base text-gray-700 bg-white p-3 rounded border border-green-100"><span class="font-bold text-green-700">해설:</span> ${q.explanation}</p>
-                    `;
-                } else {
-                    let correctText = q.type === 'mcq' ? (q.answer + 1) + "번" : q.answer;
-                    feedbackEl.classList.add('bg-red-50', 'border-red-300', 'text-red-900');
-                    feedbackEl.innerHTML = `
-                        <div class="flex flex-col sm:flex-row sm:items-center gap-2 mb-2">
-                            <div class="flex items-center gap-2">
-                                <i class="fa-solid fa-circle-xmark text-2xl text-red-600"></i>
-                                <span class="font-bold text-xl">오답입니다.</span>
-                            </div>
-                            <span class="text-lg ml-0 sm:ml-2 font-medium text-red-700">정답: ${correctText}</span>
-                        </div>
-                        <p class="text-base text-gray-700 bg-white p-3 rounded border border-red-100"><span class="font-bold text-blue-700">해설:</span> ${q.explanation}</p>
-                    `;
-                }
-            }
-        }
-
-        // Start Quiz
-        document.getElementById('student-info-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const sGrade = document.getElementById('student-grade').value;
-            const sClass = document.getElementById('student-class').value;
-            const sNum = document.getElementById('student-num').value;
-            const sName = document.getElementById('student-name').value;
-            
-            document.getElementById('display-info').textContent = `${sGrade}학년 ${sClass}반 ${sNum}번 ${sName}`;
-            document.getElementById('quiz-intro').classList.add('hidden');
-            document.getElementById('quiz-area').classList.remove('hidden');
-            
-            window.scrollTo({ top: document.getElementById('quiz-area').offsetTop - 150, behavior: 'smooth' });
+                </div>`;
         });
 
-        // Final Submit & Display Data
-        function showFinalResult() {
-            if (answeredQuestions.size < quizData.length) {
-                document.getElementById('submit-warning').classList.remove('hidden');
+        // === 벽돌 깨기 게임 로직 ===
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        let animationId;
+        
+        const gameWordsData = [
+            { w:"가람", t:"native"}, { w:"뫼", t:"native"}, { w:"시나브로", t:"native"}, { w:"고뿔", t:"native"}, { w:"가시버시", t:"native"}, { w:"하늘", t:"native"}, { w:"바다", t:"native"}, { w:"구름", t:"native"}, { w:"바람", t:"native"}, { w:"비", t:"native"}, { w:"눈", t:"native"}, { w:"달", t:"native"}, { w:"별", t:"native"}, { w:"해", t:"native"}, { w:"땅", t:"native"}, { w:"산", t:"native"}, { w:"들", t:"native"}, { w:"강", t:"native"}, { w:"돌", t:"native"}, { w:"물", t:"native"}, { w:"불", t:"native"}, { w:"나무", t:"native"}, { w:"풀", t:"native"}, { w:"꽃", t:"native"}, { w:"숲", t:"native"}, { w:"낮", t:"native"}, { w:"밤", t:"native"}, { w:"아침", t:"native"}, { w:"저녁", t:"native"}, { w:"봄", t:"native"}, { w:"여름", t:"native"}, { w:"가을", t:"native"}, { w:"겨울", t:"native"}, { w:"사람", t:"native"}, { w:"사랑", t:"native"}, { w:"마음", t:"native"}, { w:"꿈", t:"native"}, { w:"길", t:"native"}, { w:"집", t:"native"}, { w:"나이", t:"native"},
+            { w:"학교", t:"sino"}, { w:"우주", t:"sino"}, { w:"부모", t:"sino"}, { w:"학생", t:"sino"}, { w:"의학", t:"sino"}, { w:"분야", t:"sino"}, { w:"세대", t:"sino"}, { w:"양상", t:"sino"}, { w:"관용", t:"sino"}, { w:"전문어", t:"sino"}, { w:"단절", t:"sino"}, { w:"다양성", t:"sino"}, { w:"개선", t:"sino"}, { w:"효율", t:"sino"}, { w:"기각", t:"sino"}, { w:"의도", t:"sino"}, { w:"평등", t:"sino"}, { w:"자유", t:"sino"}, { w:"평화", t:"sino"}, { w:"민주", t:"sino"}, { w:"사회", t:"sino"}, { w:"국가", t:"sino"}, { w:"역사", t:"sino"}, { w:"문화", t:"sino"}, { w:"경제", t:"sino"}, { w:"정치", t:"sino"}, { w:"과학", t:"sino"}, { w:"기술", t:"sino"}, { w:"정보", t:"sino"}, { w:"통신", t:"sino"},
+            { w:"버스", t:"loan"}, { w:"컴퓨터", t:"loan"}, { w:"피자", t:"loan"}, { w:"뉴스", t:"loan"}, { w:"피아노", t:"loan"}, { w:"라디오", t:"loan"}, { w:"폰", t:"loan"}, { w:"인터넷", t:"loan"}, { w:"스포츠", t:"loan"}, { w:"마라톤", t:"loan"}, { w:"올림픽", t:"loan"}, { w:"아파트", t:"loan"}, { w:"빌딩", t:"loan"}, { w:"커피", t:"loan"}, { w:"초콜릿", t:"loan"}, { w:"바나나", t:"loan"}, { w:"토마토", t:"loan"}, { w:"햄버거", t:"loan"}, { w:"샌드위치", t:"loan"}, { w:"샐러드", t:"loan"}, { w:"스테이크", t:"loan"}, { w:"치킨", t:"loan"}, { w:"콜라", t:"loan"}, { w:"사이다", t:"loan"}, { w:"주스", t:"loan"}, { w:"택시", t:"loan"}, { w:"호텔", t:"loan"}, { w:"디자인", t:"loan"}, { w:"마이크", t:"loan"}, { w:"키보드", t:"loan"}
+        ];
+
+        const types = {
+            'native': { color: '#22c55e', label: '고유어' },
+            'sino': { color: '#ef4444', label: '한자어' },
+            'loan': { color: '#3b82f6', label: '외래어' }
+        };
+        const modeKeys = ['native', 'sino', 'loan'];
+
+        let game = {
+            state: 'ready', score: 0, lives: 3,
+            currentModeIdx: 0, baseSpeed: 4, speedMultiplier: 0.8,
+            bricks: [], particles: [], wordsQueue: []
+        };
+
+        const paddle = { w: 150, h: 24, x: 0, y: 0, speed: 8, dx: 0 };
+        const ball = { r: 12, x: 0, y: 0, dx: 4, dy: -4 };
+        
+        // 캔버스 가로 폭을 벽돌이 꽉 채우게 하기 위한 설정 (패딩 4px 제외하고 남는 공간 없이 너비 자동계산)
+        const brickInfo = { r: 3, c: 10, w: 0, h: 42, padding: 4, offsetX: 4, offsetY: 45 };
+
+        function initGame() {
+            document.getElementById('sec-game').querySelector('.text-gray-600').parentElement.classList.add('hidden');
+            document.getElementById('game-area').classList.remove('hidden');
+            document.getElementById('game-overlay').classList.add('hidden');
+            
+            canvas.width = 800; canvas.height = 500;
+            // 꽉 차게 동적 계산 (양 끝 여백 4px 고려)
+            brickInfo.w = (canvas.width - ((brickInfo.c + 1) * brickInfo.padding)) / brickInfo.c;
+            
+            paddle.y = canvas.height - 40;
+            paddle.x = canvas.width/2 - paddle.w/2;
+            ball.x = canvas.width/2; ball.y = paddle.y - 20;
+            
+            game.wordsQueue = [...gameWordsData].sort(() => Math.random() - 0.5);
+            game.score = 0; game.lives = 3; game.speedMultiplier = 0.8;
+            game.currentModeIdx = 0; game.bricks = []; game.particles = [];
+            
+            updateScoreBoard();
+            createBricks();
+            game.state = 'playing';
+            
+            document.addEventListener('keydown', handleKeyDown);
+            document.addEventListener('keyup', handleKeyUp);
+            canvas.addEventListener('mousemove', handleMouseMove);
+            canvas.addEventListener('touchmove', handleTouchMove, {passive: false});
+            
+            cancelAnimationFrame(animationId);
+            gameLoop();
+        }
+
+        function createBricks() {
+            game.bricks = [];
+            for(let r=0; r<brickInfo.r; r++) {
+                game.bricks[r] = [];
+                for(let c=0; c<brickInfo.c; c++) {
+                    if(game.wordsQueue.length > 0) {
+                        let wordData = game.wordsQueue.pop();
+                        let brickX = (c * (brickInfo.w + brickInfo.padding)) + brickInfo.padding;
+                        game.bricks[r][c] = { 
+                            x: brickX, 
+                            y: (r * (brickInfo.h + brickInfo.padding)) + brickInfo.offsetY, 
+                            status: 1, word: wordData.w, type: wordData.t 
+                        };
+                    }
+                }
+            }
+        }
+
+        function refillBricks() {
+            for(let r=0; r<brickInfo.r; r++) {
+                let rowEmpty = true;
+                for(let c=0; c<brickInfo.c; c++) {
+                    if(game.bricks[r][c].status === 1) rowEmpty = false;
+                }
+                if(rowEmpty && game.wordsQueue.length > 0) {
+                    for(let c=0; c<brickInfo.c; c++) {
+                        if(game.wordsQueue.length > 0) {
+                            let wordData = game.wordsQueue.pop();
+                            let brickX = (c * (brickInfo.w + brickInfo.padding)) + brickInfo.padding;
+                            game.bricks[r][c] = {
+                                x: brickX, 
+                                y: (r * (brickInfo.h + brickInfo.padding)) + brickInfo.offsetY, 
+                                status: 1, word: wordData.w, type: wordData.t
+                            };
+                        }
+                    }
+                }
+            }
+        }
+
+        function drawPaddle() {
+            const currentMode = modeKeys[game.currentModeIdx];
+            ctx.fillStyle = types[currentMode].color;
+            ctx.beginPath();
+            ctx.roundRect(paddle.x, paddle.y, paddle.w, paddle.h, 12);
+            ctx.fill();
+            ctx.fillStyle = "#fff";
+            ctx.font = "bold 18px Noto Sans KR";
+            ctx.textAlign = "center"; ctx.textBaseline = "middle";
+            ctx.fillText(types[currentMode].label, paddle.x + paddle.w/2, paddle.y + paddle.h/2);
+        }
+
+        function drawBricks() {
+            for(let r=0; r<brickInfo.r; r++) {
+                for(let c=0; c<brickInfo.c; c++) {
+                    let b = game.bricks[r][c];
+                    if(b.status === 1) {
+                        let drawColor = types[b.type].color;
+                        if(game.score >= 60) { drawColor = '#64748b'; } 
+                        else if (game.score >= 30) {
+                            const visibleType = ['native', 'sino', 'loan'][Math.floor((game.score-30)/10) % 3];
+                            if(b.type !== visibleType) drawColor = '#64748b';
+                        }
+                        
+                        ctx.fillStyle = drawColor;
+                        ctx.fillRect(b.x, b.y, brickInfo.w, brickInfo.h);
+                        ctx.fillStyle = "#fff";
+                        ctx.font = "bold 17px Noto Sans KR";
+                        ctx.textAlign = "center"; ctx.textBaseline = "middle";
+                        ctx.fillText(b.word, b.x + brickInfo.w/2, b.y + brickInfo.h/2);
+                    }
+                }
+            }
+        }
+
+        function spawnParticles(x, y, color) {
+            for(let i=0; i<10; i++) {
+                game.particles.push({
+                    x: x, y: y,
+                    vx: (Math.random() - 0.5) * 6, vy: (Math.random() - 0.5) * 6,
+                    life: 1.0, color: color
+                });
+            }
+        }
+
+        function drawBall() {
+            ctx.beginPath();
+            ctx.arc(ball.x, ball.y, ball.r, 0, Math.PI*2);
+            ctx.fillStyle = types[modeKeys[game.currentModeIdx]].color;
+            ctx.fill();
+            ctx.strokeStyle = "#fff"; ctx.lineWidth = 2; ctx.stroke();
+            ctx.closePath();
+        }
+
+        function drawParticles() {
+            for(let i=game.particles.length-1; i>=0; i--) {
+                let p = game.particles[i];
+                ctx.globalAlpha = p.life;
+                ctx.fillStyle = p.color;
+                ctx.beginPath(); ctx.arc(p.x, p.y, 3, 0, Math.PI*2); ctx.fill();
+                ctx.globalAlpha = 1.0;
+                
+                p.x += p.vx; p.y += p.vy; p.life -= 0.05;
+                if(p.life <= 0) game.particles.splice(i, 1);
+            }
+        }
+
+        function collisionDetection() {
+            for(let r=0; r<brickInfo.r; r++) {
+                for(let c=0; c<brickInfo.c; c++) {
+                    let b = game.bricks[r][c];
+                    if(b.status === 1) {
+                        if(ball.x > b.x && ball.x < b.x + brickInfo.w && ball.y > b.y && ball.y < b.y + brickInfo.h) {
+                            let currentMode = modeKeys[game.currentModeIdx];
+                            if(b.type === currentMode) {
+                                let hitTop = Math.abs(ball.y - b.y) < 6;
+                                let hitBottom = Math.abs(ball.y - (b.y + brickInfo.h)) < 6;
+                                if(!hitTop && !hitBottom) ball.dx = -ball.dx; 
+                                else ball.dy = -ball.dy;
+
+                                b.status = 0;
+                                spawnParticles(b.x + brickInfo.w/2, b.y + brickInfo.h/2, types[b.type].color);
+                                game.score++;
+                                
+                                if(game.score % 10 === 0 && game.speedMultiplier < 1.6) game.speedMultiplier += 0.1;
+                                updateScoreBoard();
+                                refillBricks();
+
+                                if(game.score >= 100) {
+                                    game.state = 'over';
+                                    document.getElementById('overlay-msg').innerHTML = "성공! 100개 완료 🎉<br><span class='text-2xl mt-4 block text-yellow-300'>어휘 마스터 달성!</span>";
+                                    document.getElementById('game-overlay').classList.remove('hidden');
+                                }
+                            } else {
+                                let hitTop = Math.abs(ball.y - b.y) < 6;
+                                let hitBottom = Math.abs(ball.y - (b.y + brickInfo.h)) < 6;
+                                if(!hitTop && !hitBottom) ball.dx = -ball.dx; 
+                                else ball.dy = -ball.dy;
+                                ball.y += (ball.dy > 0 ? 4 : -4);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        function move() {
+            paddle.x += paddle.dx;
+            if(paddle.x < 0) paddle.x = 0;
+            if(paddle.x + paddle.w > canvas.width) paddle.x = canvas.width - paddle.w;
+
+            let curSpeed = game.baseSpeed * game.speedMultiplier;
+            let norm = Math.sqrt(ball.dx*ball.dx + ball.dy*ball.dy);
+            ball.x += (ball.dx / norm) * curSpeed;
+            ball.y += (ball.dy / norm) * curSpeed;
+
+            if(ball.x + ball.dx > canvas.width - ball.r || ball.x + ball.dx < ball.r) ball.dx = -ball.dx;
+            if(ball.y + ball.dy < ball.r) ball.dy = -ball.dy;
+            else if(ball.y + ball.dy > paddle.y - ball.r) {
+                if(ball.x > paddle.x && ball.x < paddle.x + paddle.w) {
+                    ball.dy = -Math.abs(ball.dy);
+                    let hitPoint = ball.x - (paddle.x + paddle.w/2);
+                    ball.dx = hitPoint * 0.15;
+                } else if(ball.y + ball.dy > canvas.height) {
+                    game.lives--;
+                    updateScoreBoard();
+                    if(game.lives <= 0) {
+                        game.state = 'over';
+                        document.getElementById('overlay-msg').textContent = "게임 오버 😥";
+                        document.getElementById('game-overlay').classList.remove('hidden');
+                    } else {
+                        ball.x = canvas.width/2; ball.y = paddle.y - 20;
+                        ball.dx = 4; ball.dy = -4;
+                        paddle.x = canvas.width/2 - paddle.w/2;
+                    }
+                }
+            }
+        }
+
+        function handleKeyDown(e) {
+            if(e.key === 'ArrowRight') paddle.dx = paddle.speed;
+            else if(e.key === 'ArrowLeft') paddle.dx = -paddle.speed;
+            else if(e.key === ' ') { e.preventDefault(); game.currentModeIdx = (game.currentModeIdx + 1) % 3; }
+        }
+        function handleKeyUp(e) { if(e.key === 'ArrowRight' || e.key === 'ArrowLeft') paddle.dx = 0; }
+        function handleMouseMove(e) {
+            let relativeX = e.clientX - canvas.getBoundingClientRect().left;
+            let scaleX = canvas.width / canvas.getBoundingClientRect().width;
+            if(relativeX > 0 && relativeX < canvas.getBoundingClientRect().width) {
+                paddle.x = (relativeX * scaleX) - paddle.w/2;
+            }
+        }
+        function handleTouchMove(e) {
+            e.preventDefault();
+            let touch = e.touches[0];
+            let relativeX = touch.clientX - canvas.getBoundingClientRect().left;
+            let scaleX = canvas.width / canvas.getBoundingClientRect().width; 
+            if(relativeX > 0 && relativeX < canvas.getBoundingClientRect().width) {
+                paddle.x = (relativeX * scaleX) - paddle.w/2;
+            }
+        }
+
+        function updateScoreBoard() {
+            document.getElementById('game-score').textContent = `점수: ${game.score} / 100 (속도: x${game.speedMultiplier.toFixed(1)})`;
+            document.getElementById('game-lives').textContent = `남은 생명: ${game.lives}`;
+        }
+
+        function gameLoop() {
+            if(game.state !== 'playing') return;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawBricks();
+            drawPaddle();
+            drawBall();
+            drawParticles();
+            collisionDetection();
+            move();
+            animationId = requestAnimationFrame(gameLoop);
+        }
+
+        // === 형성 평가 10문항 데이터 ===
+        const quizData = [
+            { id: 1, type: 'ox', q: "외래어는 외국에서 들어왔지만 우리말로 인정되어 쓰이는 단어이다.", a: "O", exp: "외래어는 외국어와 달리 우리말로 인정되어 널리 쓰이는 단어입니다." },
+            { id: 2, type: 'ox', q: "'미인(남녀 모두 ➔ 여자)'은 단어의 의미가 확장된 예시이다.", a: "X", exp: "의미의 범위가 좁아졌으므로 의미 '축소'에 해당합니다." },
+            { id: 3, type: 'short', q: "과거에는 쓰였으나 시대가 변하면서 지금은 더 이상 쓰이지 않게 된 단어를 무엇이라고 하는가?", a: "사어", exp: "'사어' 또는 '죽은말'이라고 합니다. 예: 뫼, 가람" },
+            { id: 4, type: 'short', q: "불쾌하거나 두려운 것을 가리키는 금기어를 피하고, 부드럽고 덜 직접적으로 돌려 말하는 단어를 무엇이라고 하는가?", a: "완곡어", exp: "금기어를 대신하여 부드럽게 표현하는 것을 '완곡어'라고 합니다." },
+            { id: 5, type: 'mcq', q: "다음 중 우리말 어휘 분류에 대한 설명으로 알맞지 않은 것은?", options: ["고유어는 본디부터 우리말에 있었거나 새로 만들어진 단어이다.", "한자어는 한자를 바탕으로 만들어진 단어이다.", "외래어는 외국에서 들어왔지만 우리말처럼 쓰이는 단어이다.", "외국어는 외래어와 마찬가지로 우리말로 인정된다.", "'하늘', '바다'는 고유어에 해당한다."], a: "4", exp: "외국어는 다른 나라의 말로, 우리말로 인정되지 않습니다." },
+            { id: 6, type: 'mcq', q: "다음 중 단어의 의미가 본래 뜻과 전혀 다르게 바뀐 '의미 이동'의 예시는?", options: ["다리(신체 부위 ➔ 무생물의 받침)", "미인(남녀 모두 ➔ 여자)", "어리다(어리석다 ➔ 나이가 적다)", "뫼(산)", "누리꾼(네티즌)"], a: "3", exp: "'어리다'는 원래 '어리석다'라는 뜻이었으나 현재는 '나이가 적다'로 의미가 완전히 이동했습니다." },
+            { id: 7, type: 'mcq', q: "세대에 따른 어휘의 특징으로 가장 알맞은 것은?", options: ["청소년층은 한자어를 주로 사용한다.", "노년층은 줄임말이나 외래어를 자주 사용한다.", "세대 간 어휘 차이는 의사소통에 아무런 영향을 주지 않는다.", "노년층은 예의를 갖춘 표현을 자주 사용하는 경향이 있다.", "모든 세대가 동일한 유행어를 공유한다."], a: "4", exp: "노년층은 한자어나 예의를 갖춘 표현을 자주 사용합니다." },
+            { id: 8, type: 'mcq', q: "특정 지역이나 사회 계층에서 주로 쓰여 그 특성을 나타내는 어휘는?", options: ["방언", "은어", "금기어", "신조어", "전문어"], a: "1", exp: "방언(사투리)은 특정 지역이나 계층에서 주로 쓰이는 어휘입니다." },
+            { id: 9, type: 'mcq', q: "다음 중 은어에 대한 설명으로 올바른 것은?", options: ["널리 여러 사람의 입에 오르내리는 단어이다.", "업무의 효율성을 높이기 위해 사용하는 단어이다.", "어떤 계층의 사람들이 자기네끼리 비밀을 유지하기 위해 사용하는 단어이다.", "새로운 사물이 생겨나면서 새로 만들어진 단어이다.", "원활한 의사소통을 위해 공통어로 정한 언어이다."], a: "3", exp: "은어는 비밀 유지를 목적으로 특정 집단 내에서만 사용하는 단어입니다." },
+            { id: 10, type: 'mcq', q: "인터넷 언어를 사용할 때의 바람직한 태도는?", options: ["그림말(이모티콘)은 무조건 많이 사용할수록 좋다.", "줄임말을 최대한 만들어 사용하여 효율성을 극대화한다.", "상황을 고려하지 않고 간편한 표현만 쓴다.", "일상생활의 모든 대화를 인터넷 언어로 대체한다.", "무분별한 사용을 자제하고 상황을 고려하여 적절히 선택한다."], a: "5", exp: "인터넷 언어는 무분별한 사용을 자제하고 상황(TPO)에 맞게 적절히 사용해야 합니다." }
+        ];
+
+        let studentInfo = {};
+
+        function renderQuestions() {
+            const container = document.getElementById('questions-container');
+            container.innerHTML = '';
+            quizData.forEach((q, index) => {
+                let inputHtml = '';
+                if (q.type === 'ox') {
+                    // 크고 뚜렷한 OX 버튼 스타일 적용
+                    inputHtml = `
+                        <div class="flex gap-8 mt-6 justify-center">
+                            <label class="cursor-pointer flex items-center justify-center gap-3 text-5xl font-black text-blue-600 bg-blue-50 w-48 h-32 rounded-2xl border-2 border-blue-200 hover:bg-blue-100 hover:border-blue-400 transition shadow-sm">
+                                <input type="radio" name="q${q.id}" value="O" class="w-8 h-8 accent-blue-600 shrink-0"> O
+                            </label>
+                            <label class="cursor-pointer flex items-center justify-center gap-3 text-5xl font-black text-red-600 bg-red-50 w-48 h-32 rounded-2xl border-2 border-red-200 hover:bg-red-100 hover:border-red-400 transition shadow-sm">
+                                <input type="radio" name="q${q.id}" value="X" class="w-8 h-8 accent-red-600 shrink-0"> X
+                            </label>
+                        </div>`;
+                } else if (q.type === 'short') {
+                    inputHtml = `<div class="mt-4"><input type="text" name="q${q.id}" class="w-full border-2 border-gray-200 rounded-xl p-4 text-lg focus:outline-none focus:border-emerald-500" placeholder="정답을 입력하세요"></div>`;
+                } else if (q.type === 'mcq') {
+                    inputHtml = `<div class="mt-4 space-y-2 text-left">`;
+                    const circleNums = ['①', '②', '③', '④', '⑤']; // 배열 선언 오류 수정
+                    q.options.forEach((opt, i) => {
+                        inputHtml += `
+                            <label class="flex items-start gap-3 p-3 rounded-lg hover:bg-gray-50 cursor-pointer border border-transparent hover:border-gray-200 transition">
+                                <input type="radio" name="q${q.id}" value="${i + 1}" class="mt-1 w-5 h-5 accent-emerald-500 shrink-0">
+                                <span class="text-gray-700 text-lg leading-tight"><span class="font-bold mr-1 text-emerald-600">${circleNums[i]}</span> ${opt}</span>
+                            </label>`;
+                    });
+                    inputHtml += `</div>`;
+                }
+
+                container.innerHTML += `
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200" id="q-card-${q.id}">
+                        <h4 class="font-bold text-xl text-gray-800 text-left leading-relaxed"><span class="text-emerald-500 mr-2 text-2xl font-black">Q${index + 1}.</span>${q.q}</h4>
+                        ${inputHtml}
+                    </div>`;
+            });
+        }
+
+        function startQuiz() {
+            const g = document.getElementById('stu-grade').value;
+            const c = document.getElementById('stu-class').value;
+            const n = document.getElementById('stu-num').value;
+            const name = document.getElementById('stu-name').value;
+            
+            if (!g || !c || !n || !name) {
+                alert("인적 사항(학년, 반, 번호, 이름)을 모두 입력해주세요!");
                 return;
             }
-            
-            document.getElementById('submit-warning').classList.add('hidden');
-            document.getElementById('btn-final-submit').classList.add('hidden');
-            document.getElementById('quiz-result').classList.remove('hidden');
-            
-            const sGrade = document.getElementById('student-grade').value;
-            const sClass = document.getElementById('student-class').value;
-            const sNum = document.getElementById('student-num').value;
-            const sName = document.getElementById('student-name').value;
-            
-            document.getElementById('result-user-info').textContent = `${sGrade}학년 ${sClass}반 ${sName} 학생의 점수는`;
-            
-            const scoreDisplay = document.getElementById('score-display');
-            scoreDisplay.textContent = `${currentScore}점`;
-            
-            let msg = "";
-            if(currentScore === 100) msg = "완벽해요! 어휘의 양상을 완벽하게 이해했습니다. 🌟";
-            else if(currentScore >= 80) msg = "참 잘했어요! 조금만 더 복습하면 완벽하겠네요. 👍";
-            else if(currentScore >= 60) msg = "잘했어요! 해설을 꼼꼼히 확인하고 복습해봐요. 📚";
-            else msg = "개념과 양상 부분을 다시 한번 천천히 읽어보세요. 할 수 있어요! 💪";
-            
-            document.getElementById('score-message').textContent = msg;
+            studentInfo = { grade: g, class: c, num: n, name: name };
+            document.getElementById('quiz-intro').classList.add('hidden');
+            renderQuestions(); // 문항을 화면에 그립니다.
+            document.getElementById('quiz-area').classList.remove('hidden');
+        }
 
-            // 구글 스프레드시트 데이터 전송 로직 (내부 GAS 프로토콜 활성화)
-            const dataStatusEl = document.getElementById('data-send-status');
-            
-            // google.script.run 프로토콜이 브라우저 런타임에 로드되었는지 체크
-            if (typeof google !== 'undefined' && google.script && google.script.run) {
-                dataStatusEl.textContent = "📡 학급 구글 스프레드시트로 데이터를 안전하게 제출하는 중...";
-                dataStatusEl.className = "text-yellow-200 text-base mt-2 font-semibold";
+        function submitQuiz() {
+            let totalScore = 0;
+            let results = [];
+            let allAnswered = true;
 
-                const payload = {
-                    grade: sGrade,
-                    class: sClass,
-                    number: sNum,
-                    name: sName,
-                    score: currentScore,
-                    questions: studentAnswersData
-                };
+            quizData.forEach(q => {
+                let userAnswer = '';
+                if (q.type === 'ox' || q.type === 'mcq') {
+                    const selected = document.querySelector(`input[name="q${q.id}"]:checked`);
+                    if (selected) userAnswer = selected.value;
+                } else if (q.type === 'short') {
+                    userAnswer = document.querySelector(`input[name="q${q.id}"]`).value.trim();
+                }
 
-                // 외부 URL 없이 스프레드시트 바인딩 스크립트의 saveData(payload) 직접 트리거
-                google.script.run
-                    .withSuccessHandler(function(response) {
-                        if (response && response.status === "success") {
-                            dataStatusEl.textContent = "✅ 학급 구글 스프레드시트에 제출 기록이 정상 등록되었습니다!";
-                            dataStatusEl.className = "text-green-300 text-base mt-2 font-semibold";
-                        } else {
-                            dataStatusEl.textContent = "❌ 전송 실패: " + (response ? response.message : "알 수 없는 서브시트 오류");
-                            dataStatusEl.className = "text-red-300 text-base mt-2 font-semibold";
-                        }
-                    })
-                    .withFailureHandler(function(err) {
-                        dataStatusEl.textContent = "❌ 전송 오류: " + err.message;
-                        dataStatusEl.className = "text-red-300 text-base mt-2 font-semibold";
-                    })
-                    .saveData(payload);
-            } else {
-                dataStatusEl.textContent = "ℹ️ 구글 스프레드시트 컨테이너 외부(로컬 테스트)에서 실행 중입니다. 결과가 화면에만 임시 기록됩니다.";
-                dataStatusEl.className = "text-gray-300 text-base mt-2 font-semibold";
+                if (!userAnswer) allAnswered = false;
+
+                const isCorrect = userAnswer === q.a;
+                if (isCorrect) totalScore += 10; // 10문제, 각 10점
+
+                results.push({
+                    id: q.id,
+                    userAnswer: userAnswer,
+                    isCorrect: isCorrect ? 'O' : 'X',
+                    correctAnswer: q.a,
+                    exp: q.exp
+                });
+            });
+
+            if (!allAnswered) {
+                if(!confirm("풀지 않은 문제가 있습니다. 이대로 제출하시겠습니까?")) return;
             }
-            
-            window.scrollTo({ top: document.getElementById('quiz-result').offsetTop - 150, behavior: 'smooth' });
-        }
 
-        function resetQuiz() {
-            currentScore = 0;
-            answeredQuestions.clear();
-            studentAnswersData = {};
-            document.getElementById('answered-count').textContent = '0';
-            document.getElementById('student-info-form').reset();
-            document.getElementById('btn-final-submit').classList.remove('hidden');
-            document.getElementById('submit-warning').classList.add('hidden');
-            
-            document.getElementById('quiz-result').classList.add('hidden');
+            // 1. UI 업데이트 (결과 및 해설 표시 화면 띄우기)
             document.getElementById('quiz-area').classList.add('hidden');
-            document.getElementById('quiz-intro').classList.remove('hidden');
-            
-            renderQuiz();
-            window.scrollTo({ top: document.getElementById('sec-quiz').offsetTop - 150, behavior: 'smooth' });
-        }
+            document.getElementById('quiz-result').classList.remove('hidden');
+            document.getElementById('result-stu-info').textContent = `${studentInfo.grade}학년 ${studentInfo.class}반 ${studentInfo.num}번 ${studentInfo.name}`;
+            document.getElementById('result-score').textContent = `${totalScore}점`;
 
+            const reviewContainer = document.getElementById('review-container');
+            reviewContainer.innerHTML = '';
+            
+            quizData.forEach((q, idx) => {
+                const res = results[idx];
+                const cardColor = res.isCorrect === 'O' ? 'border-green-300 bg-green-50' : 'border-red-300 bg-red-50';
+                const mark = res.isCorrect === 'O' ? '<span class="text-green-600 font-bold ml-2">정답!</span>' : `<span class="text-red-600 font-bold ml-2">오답 (정답: ${q.a})</span>`;
+                
+                reviewContainer.innerHTML += `
+                    <div class="p-6 rounded-2xl border ${cardColor}">
+                        <h4 class="font-bold text-lg text-gray-800 mb-2">Q${idx + 1}. ${q.q} ${mark}</h4>
+                        <p class="text-gray-600 text-sm mb-1">나의 응답: <strong class="text-gray-900">${res.userAnswer || '미응답'}</strong></p>
+                        <div class="mt-3 p-3 bg-white/60 rounded-lg text-gray-700 text-sm border border-white/50">
+                            <strong>💡 해설:</strong> ${q.exp}
+                        </div>
+                    </div>`;
+            });
+
+            // 2. 구글 스프레드시트 수집용 데이터 포장
+            const timestamp = new Date().toLocaleString('ko-KR');
+            let sheetData = [timestamp, studentInfo.grade, studentInfo.class, studentInfo.num, studentInfo.name, totalScore];
+            
+            // Q1답, Q1채점, Q2답, Q2채점 순서로 배열에 추가
+            results.forEach(res => {
+                sheetData.push(res.userAnswer || "");
+                sheetData.push(res.isCorrect);
+            });
+
+            // 3. 구글 Apps Script 내부 프로토콜로 전송 (google.script.run)
+            if (typeof google !== 'undefined' && google.script && google.script.run) {
+                try {
+                    // 데이터 직렬화 이슈 방지 (안전한 배열로 변환)
+                    const safeData = JSON.parse(JSON.stringify(sheetData));
+                    google.script.run
+                        .withSuccessHandler(() => console.log("구글 시트 저장 성공!"))
+                        .withFailureHandler((err) => {
+                            console.error("구글 시트 저장 실패:", err);
+                            alert("평가 결과 저장 중 오류가 발생했습니다: " + err.message);
+                        })
+                        .saveQuizData(safeData);
+                } catch (e) {
+                    console.error("google.script.run 호출 오류:", e);
+                }
+            } else {
+                console.log("[테스트 환경 안내] 전송될 데이터:\n", sheetData);
+                console.log("※ 실제 시트 저장은 구글 Apps Script 웹 앱 환경에서만 작동합니다.");
+            }
+        }
     </script>
 </body>
 </html>
